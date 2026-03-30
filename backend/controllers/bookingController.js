@@ -57,6 +57,39 @@ export const updateBookingStatus = async (req, res) => {
   const { status } = req.body;
   try {
     await pool.query('UPDATE Bookings SET status = $1 WHERE id = $2', [status, id]);
+
+    if (status === 'Completed') {
+      const bookingRes = await pool.query(`
+        SELECT b.worker_id, w.category as service_type
+        FROM Bookings b
+        JOIN Workers w ON b.worker_id = w.id
+        WHERE b.id = $1
+      `, [id]);
+      const booking = bookingRes.rows[0];
+
+      if (booking) {
+        await pool.query(`
+          INSERT INTO job_history (worker_id, booking_id, service_type)
+          VALUES ($1, $2, $3)
+        `, [booking.worker_id, id, booking.service_type]);
+
+        const totalAcceptedRes = await pool.query(`SELECT COUNT(*) as count FROM Bookings WHERE worker_id = $1 AND status != 'Pending'`, [booking.worker_id]);
+        const totalCompletedRes = await pool.query(`SELECT COUNT(*) as count FROM Bookings WHERE worker_id = $1 AND status = 'Completed'`, [booking.worker_id]);
+        
+        const totalAccepted = parseInt(totalAcceptedRes.rows[0].count) || 1;
+        const totalCompleted = parseInt(totalCompletedRes.rows[0].count) || 0;
+        const completionRate = (totalCompleted / totalAccepted) * 100;
+
+        const trustChange = (completionRate >= 90) ? 5 : (completionRate > 50 ? 1 : -5);
+        
+        await pool.query(`
+          UPDATE Workers 
+          SET total_jobs = $1, completion_rate = $2, trust_score = LEAST(trust_score + $3, 100)
+          WHERE id = $4
+        `, [totalCompleted, completionRate, trustChange, booking.worker_id]);
+      }
+    }
+
     res.json({ message: 'Booking status updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
