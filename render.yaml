@@ -17,5 +17,5 @@ services:
 databases:
   - name: smart-city-db
     databaseName: smart_city_services
-    user: postgres
+    user: smartcityuser
     plan: free
