@@ -15,7 +15,7 @@ function Navbar() {
     <nav className="navbar">
       <Link to="/" className="navbar-brand">Smart City Services</Link>
       <div className="navbar-links">
-        <Link to="/workers">Find Workers</Link>
+        {user?.role === 'Customer' && <Link to="/workers">Find Workers</Link>}
         {user ? (
           <div className="navbar-user">
             {user.role === 'Admin' && <Link to="/dashboard/admin">Admin Dashboard</Link>}

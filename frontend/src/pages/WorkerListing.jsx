@@ -8,6 +8,8 @@ function WorkerListing() {
 
   useEffect(() => {
     fetchWorkers();
+    const interval = setInterval(fetchWorkers, 5000);
+    return () => clearInterval(interval);
   }, [category]);
 
   const fetchWorkers = async () => {

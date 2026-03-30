@@ -37,7 +37,6 @@ function Register() {
             <select name="role" onChange={handleChange} value={formData.role}>
               <option value="Customer">Customer</option>
               <option value="Worker">Worker</option>
-              <option value="Admin">Admin</option>
             </select>
           </div>
           {formData.role === 'Worker' && (
@@ -53,8 +52,11 @@ function Register() {
                 </select>
               </div>
               <div className="form-group"><label>Experience (Years)</label><input type="number" name="experience" onChange={handleChange} required /></div>
-              <div className="form-group"><label>Location</label><input type="text" name="location" onChange={handleChange} required /></div>
+              <div className="form-group"><label>Worker City Location</label><input type="text" name="location" onChange={handleChange} required /></div>
             </>
+          )}
+          {formData.role === 'Customer' && (
+            <div className="form-group"><label>Your City Location (for finding nearest workers)</label><input type="text" name="location" onChange={handleChange} required /></div>
           )}
           <button type="submit" className="btn">Register</button>
         </form>

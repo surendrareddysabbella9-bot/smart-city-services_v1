@@ -27,7 +27,7 @@ export const register = async (req, res) => {
           [userId, category, experience, location, 'Pending']
         );
       } else if (role === 'Customer') {
-        await client.query('INSERT INTO Customers (user_id) VALUES ($1)', [userId]);
+        await client.query('INSERT INTO Customers (user_id, location) VALUES ($1, $2)', [userId, location || '']);
       }
 
       await client.query('COMMIT');
@@ -72,6 +72,44 @@ export const login = async (req, res) => {
 
     res.json({ token, user: { id: user.id, name: user.name, role: user.role, workerId, customerId } });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    const userRes = await pool.query('SELECT name, phone, email, role FROM Users WHERE id = $1', [req.user.id]);
+    if (userRes.rows.length === 0) return res.status(404).json({ message: 'User not found' });
+    let profile = userRes.rows[0];
+
+    if (profile.role === 'Worker') {
+      const workerRes = await pool.query('SELECT location, experience FROM Workers WHERE user_id = $1', [req.user.id]);
+      if (workerRes.rows.length > 0) profile = { ...profile, ...workerRes.rows[0] };
+    } else if (profile.role === 'Customer') {
+      const custRes = await pool.query('SELECT location FROM Customers WHERE user_id = $1', [req.user.id]);
+      if (custRes.rows.length > 0) profile = { ...profile, ...custRes.rows[0] };
+    }
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const { name, phone, location, experience } = req.body;
+  try {
+    await pool.query('BEGIN');
+    await pool.query('UPDATE Users SET name = $1, phone = $2 WHERE id = $3', [name, phone, req.user.id]);
+    
+    if (req.user.role === 'Worker') {
+      await pool.query('UPDATE Workers SET location = $1, experience = $2 WHERE user_id = $3', [location, experience, req.user.id]);
+    } else if (req.user.role === 'Customer') {
+      await pool.query('UPDATE Customers SET location = $1 WHERE user_id = $2', [location, req.user.id]);
+    }
+    await pool.query('COMMIT');
+    res.json({ message: 'Profile updated' });
+  } catch (err) {
+    await pool.query('ROLLBACK');
     res.status(500).json({ error: err.message });
   }
 };

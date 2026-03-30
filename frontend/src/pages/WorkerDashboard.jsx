@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
+import ProfileEditor from '../components/ProfileEditor';
 
 function WorkerDashboard() {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     fetchBookings();
+    const interval = setInterval(fetchBookings, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchBookings = async () => {
@@ -28,6 +31,7 @@ function WorkerDashboard() {
 
   return (
     <div className="container">
+      <ProfileEditor userRole="Worker" />
       <div className="dashboard-header">
         <h1 className="dashboard-title">My Jobs</h1>
       </div>

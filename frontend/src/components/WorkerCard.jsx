@@ -5,9 +5,10 @@ import CertificationBadge from './CertificationBadge';
 function WorkerCard({ worker }) {
   return (
     <div className="card">
-      <div className="card-header">
-        <h3 className="card-title">{worker.name}</h3>
+      <div className="card-header" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <h3 className="card-title" style={{ margin: 0 }}>{worker.name}</h3>
         {worker.verification_status === 'Verified' && <span className="badge verified">Verified</span>}
+        {worker.isNearest && <span className="badge" style={{background: 'var(--primary)', color: 'white'}}>Nearest</span>}
       </div>
       <p className="card-subtitle">{worker.category}</p>
       
