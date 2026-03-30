@@ -2,6 +2,7 @@ services:
   - type: web
     name: smart-city-services
     env: node
+    plan: free
     buildCommand: "npm --prefix frontend install && npm --prefix frontend run build && npm --prefix backend install"
     startCommand: "node backend/init_db.mjs && node backend/migrate_v2.mjs && node backend/server.js"
     envVars:
