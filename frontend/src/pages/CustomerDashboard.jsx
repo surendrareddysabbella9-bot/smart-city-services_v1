@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import ProfileEditor from '../components/ProfileEditor';
+import { Link } from 'react-router-dom';
 
 function CustomerDashboard() {
   const [bookings, setBookings] = useState([]);
@@ -40,8 +41,9 @@ function CustomerDashboard() {
   return (
     <div className="container">
       <ProfileEditor userRole="Customer" />
-      <div className="dashboard-header">
+      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="dashboard-title">My Bookings</h1>
+        <Link to="/dashboard/customer/subscriptions" className="btn">Manage Subscriptions</Link>
       </div>
       {bookings.length > 0 ? (
         <table>

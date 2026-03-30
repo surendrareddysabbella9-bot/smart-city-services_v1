@@ -9,6 +9,9 @@ import Booking from './pages/Booking';
 import CustomerDashboard from './pages/CustomerDashboard';
 import WorkerDashboard from './pages/WorkerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import WorkerPerformanceDashboard from './pages/WorkerPerformanceDashboard';
+import CommunitySubscriptionsPage from './pages/CommunitySubscriptionsPage';
 
 const PrivateRoute = ({ children, role }) => {
   const token = localStorage.getItem('token');
@@ -31,6 +34,9 @@ function App() {
         <Route path="/dashboard/customer" element={<PrivateRoute role="Customer"><CustomerDashboard /></PrivateRoute>} />
         <Route path="/dashboard/worker" element={<PrivateRoute role="Worker"><WorkerDashboard /></PrivateRoute>} />
         <Route path="/dashboard/admin" element={<PrivateRoute role="Admin"><AdminDashboard /></PrivateRoute>} />
+        <Route path="/dashboard/admin/analytics" element={<PrivateRoute role="Admin"><AnalyticsDashboard /></PrivateRoute>} />
+        <Route path="/dashboard/worker/performance" element={<PrivateRoute role="Worker"><WorkerPerformanceDashboard /></PrivateRoute>} />
+        <Route path="/dashboard/customer/subscriptions" element={<PrivateRoute role="Customer"><CommunitySubscriptionsPage /></PrivateRoute>} />
       </Routes>
     </Router>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
+import { Link } from 'react-router-dom';
 
 function AdminDashboard() {
   const [pendingWorkers, setPendingWorkers] = useState([]);
@@ -33,8 +34,9 @@ function AdminDashboard() {
 
   return (
     <div className="container">
-      <div className="dashboard-header">
+      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="dashboard-title">Admin Dashboard</h1>
+        <Link to="/dashboard/admin/analytics" className="btn">City Intelligence Analytics</Link>
       </div>
       
       <div style={{ marginBottom: '3rem' }}>

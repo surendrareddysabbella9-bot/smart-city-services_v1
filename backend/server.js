@@ -8,6 +8,10 @@ import workerRoutes from './routes/workerRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import ratingRoutes from './routes/ratingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import alertRoutes from './routes/alertRoutes.js';
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
+import performanceRoutes from './routes/performanceRoutes.js';
 
 dotenv.config();
 
@@ -24,6 +28,11 @@ app.use('/api/workers', workerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/admin', adminRoutes);
+
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/performance', performanceRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));

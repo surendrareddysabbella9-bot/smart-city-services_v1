@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import ProfileEditor from '../components/ProfileEditor';
+import { Link } from 'react-router-dom';
 
 function WorkerDashboard() {
   const [bookings, setBookings] = useState([]);
@@ -32,8 +33,9 @@ function WorkerDashboard() {
   return (
     <div className="container">
       <ProfileEditor userRole="Worker" />
-      <div className="dashboard-header">
+      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="dashboard-title">My Jobs</h1>
+        <Link to="/dashboard/worker/performance" className="btn">Performance Insights</Link>
       </div>
       {bookings.length > 0 ? (
         <table>
