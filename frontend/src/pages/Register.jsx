@@ -37,6 +37,7 @@ function Register() {
             <select name="role" onChange={handleChange} value={formData.role}>
               <option value="Customer">Customer</option>
               <option value="Worker">Worker</option>
+              <option value="Admin">Admin</option>
             </select>
           </div>
           {formData.role === 'Worker' && (
