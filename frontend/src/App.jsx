@@ -17,6 +17,8 @@ import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import WorkerPerformanceDashboard from './pages/WorkerPerformanceDashboard';
 import CommunitySubscriptionsPage from './pages/CommunitySubscriptionsPage';
 import ProfilePage from './pages/ProfilePage';
+import DashboardLayout from './components/DashboardLayout';
+import WorkerProfile from './pages/WorkerProfile';
 
 const queryClient = new QueryClient();
 
@@ -39,13 +41,14 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/workers" element={<WorkerListing />} />
           <Route path="/book/:workerId" element={<PrivateRoute role="Customer"><Booking /></PrivateRoute>} />
-          <Route path="/dashboard/customer" element={<PrivateRoute role="Customer"><CustomerDashboard /></PrivateRoute>} />
-          <Route path="/dashboard/worker" element={<PrivateRoute role="Worker"><WorkerDashboard /></PrivateRoute>} />
-          <Route path="/dashboard/admin" element={<PrivateRoute role="Admin"><AdminDashboard /></PrivateRoute>} />
-          <Route path="/dashboard/admin/analytics" element={<PrivateRoute role="Admin"><AnalyticsDashboard /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-          <Route path="/dashboard/worker/performance" element={<PrivateRoute role="Worker"><WorkerPerformanceDashboard /></PrivateRoute>} />
-          <Route path="/dashboard/customer/subscriptions" element={<PrivateRoute role="Customer"><CommunitySubscriptionsPage /></PrivateRoute>} />
+          <Route path="/worker/:id" element={<WorkerProfile />} />
+          <Route path="/dashboard/customer" element={<PrivateRoute role="Customer"><DashboardLayout><CustomerDashboard /></DashboardLayout></PrivateRoute>} />
+          <Route path="/dashboard/worker" element={<PrivateRoute role="Worker"><DashboardLayout><WorkerDashboard /></DashboardLayout></PrivateRoute>} />
+          <Route path="/dashboard/admin" element={<PrivateRoute role="Admin"><DashboardLayout><AdminDashboard /></DashboardLayout></PrivateRoute>} />
+          <Route path="/dashboard/admin/analytics" element={<PrivateRoute role="Admin"><DashboardLayout><AnalyticsDashboard /></DashboardLayout></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><DashboardLayout><ProfilePage /></DashboardLayout></PrivateRoute>} />
+          <Route path="/dashboard/worker/performance" element={<PrivateRoute role="Worker"><DashboardLayout><WorkerPerformanceDashboard /></DashboardLayout></PrivateRoute>} />
+          <Route path="/dashboard/customer/subscriptions" element={<PrivateRoute role="Customer"><DashboardLayout><CommunitySubscriptionsPage /></DashboardLayout></PrivateRoute>} />
         </Routes>
         <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
       </Router>
