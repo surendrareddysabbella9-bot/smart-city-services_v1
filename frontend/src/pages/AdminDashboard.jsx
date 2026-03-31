@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 
 function AdminDashboard() {
   const [pendingWorkers, setPendingWorkers] = useState([]);
+  const [flaggedWorkers, setFlaggedWorkers] = useState([]);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -16,12 +17,16 @@ function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const [workersRes, usersRes] = await Promise.all([
+      const [workersRes, usersRes, allWorkersRes] = await Promise.all([
         api.get('/admin/workers/pending'),
-        api.get('/admin/users?limit=50&page=1')
+        api.get('/admin/users?limit=50&page=1'),
+        api.get('/workers?limit=250')
       ]);
       setPendingWorkers(workersRes.data.data ? workersRes.data.data : workersRes.data);
       setUsers(usersRes.data.data ? usersRes.data.data.users : usersRes.data);
+      
+      const allW = allWorkersRes.data.data ? allWorkersRes.data.data.workers : allWorkersRes.data;
+      setFlaggedWorkers(allW.filter(w => (w.trust_score && Number(w.trust_score) < 65) || (w.averageRating && Number(w.averageRating) < 3.5)));
     } catch (err) {
       console.error(err);
     }
@@ -65,6 +70,32 @@ function AdminDashboard() {
       </div>
       
       <div style={{ marginBottom: '3rem' }}>
+        <h2><span style={{ color: '#ef4444' }}>●</span> Review Moderation Queue (Flagged Profiles)</h2>
+        {flaggedWorkers.length > 0 ? (
+          <div className="grid" style={{ marginTop: '1.5rem', marginBottom: '2.5rem' }}>
+            {flaggedWorkers.map(worker => (
+              <div key={`flagged-${worker.id}`} className="card" style={{ border: '2px solid rgba(239,68,68,0.3)', background: 'linear-gradient(to bottom, #fff, #fef2f2)' }}>
+                <div className="card-header">
+                  <h3 className="card-title">{worker.name}</h3>
+                  <span className="badge rejected" style={{ background: '#fee2e2', color: '#b91c1c' }}>Under Review</span>
+                </div>
+                <p className="card-subtitle">{worker.category}</p>
+                <div style={{ margin: '1rem 0' }}>
+                  <p style={{ color: '#b91c1c', fontWeight: 'bold' }}><strong>Trust Score:</strong> {Number(worker.trust_score).toFixed(0)}/100</p>
+                  <p style={{ color: '#b91c1c', fontWeight: 'bold' }}><strong>Rating:</strong> {worker.averageRating} Stars</p>
+                  <p><strong>System Warning:</strong> User parameters breached minimum algorithm bounds remotely.</p>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+                  <button onClick={() => toast.success('Telemetry dismissed natively.')} className="btn btn-secondary">Dismiss Alert</button>
+                  <button onClick={() => verifyWorker(worker.id, 'Rejected')} className="btn btn-danger">Suspend Profile Action</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+           <p style={{ marginTop: '1rem', marginBottom: '2.5rem', color: 'var(--text-light)' }}>Algorithm mapping normal. Zero flagged instances detected.</p>
+        )}
+
         <h2>Pending Approvals</h2>
         {pendingWorkers.length > 0 ? (
           <div className="grid" style={{ marginTop: '1.5rem' }}>

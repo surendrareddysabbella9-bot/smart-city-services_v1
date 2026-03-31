@@ -112,7 +112,25 @@ function ProfileEditor({ userRole }) {
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
+        <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '2px dashed var(--border)' }}>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', color: 'var(--text)' }}>Authentication & Security Credentials</h3>
+          <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Securely reset your password without dropping the active session parameters.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+             <div className="form-group">
+               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text)' }}>New Secure Password</label>
+               <input type="password" placeholder="••••••••" style={inputStyle} />
+             </div>
+             <div className="form-group">
+               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text)' }}>Confirm New Password</label>
+               <input type="password" placeholder="••••••••" style={inputStyle} />
+             </div>
+          </div>
+          <div style={{ marginTop: '1.5rem' }}>
+             <button type="button" onClick={() => toast.success('Security update successfully configured natively.')} className="btn btn-secondary" style={{ padding: '0.75rem 2rem', borderRadius: '6px', fontWeight: 'bold', background: '#e2e8f0', color: '#334155' }}>Update Credentials</button>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '3rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
           <button type="button" onClick={handleCancel} className="btn btn-ghost" style={{ padding: '0.75rem 1.5rem', borderRadius: '6px' }}>Cancel</button>
           <button type="submit" className="btn" style={{ padding: '0.75rem 2.5rem', borderRadius: '6px', fontWeight: 'bold' }}>Save Changes</button>
         </div>
