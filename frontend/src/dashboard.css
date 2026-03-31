@@ -5,11 +5,12 @@
   background: var(--background);
 }
 .sidebar {
-  width: 280px;
+  width: 80px;
   background: #0f172a;
   color: #fff;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 .sidebar-header {
   padding: 1.5rem;
@@ -17,28 +18,27 @@
   background: #1e293b;
 }
 .sidebar-nav {
-  padding: 2rem 1.25rem;
+  padding: 2rem 0;
   flex: 1;
+  width: 100%;
 }
 .nav-section {
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
-  padding-left: 0.5rem;
+  display: none;
 }
 .nav-link {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
+  padding: 1.25rem 0;
+  width: 100%;
   color: #cbd5e1;
   text-decoration: none;
-  border-radius: 8px;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
+  border-radius: 0;
+  font-size: 1.4rem;
   transition: all 0.2s ease-in-out;
+}
+.nav-text {
+  display: none !important;
 }
 .nav-link:hover, .nav-link.active {
   background: var(--primary);

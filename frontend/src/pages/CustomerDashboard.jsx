@@ -41,7 +41,16 @@ function CustomerDashboard() {
         setRatedJobs(newRated);
         localStorage.setItem('ratedBookings', JSON.stringify(newRated));
         queryClient.invalidateQueries(['customerBookings']);
-      } catch(err) { toast.error(err.response?.data?.message || err.response?.data?.error || 'Ratings failed security bounds constraint'); }
+      } catch(err) { 
+        if(err.response?.status === 400 && err.response?.data?.message?.includes('already exists')) {
+           toast.info('Historical log: This job has already been rated securely.');
+           const newRated = [...ratedJobs, bookingId];
+           setRatedJobs(newRated);
+           localStorage.setItem('ratedBookings', JSON.stringify(newRated));
+        } else {
+           toast.error(err.response?.data?.message || err.response?.data?.error || 'Ratings failed security bounds constraint'); 
+        }
+      }
     }
   };
 
