@@ -28,13 +28,18 @@ function CustomerDashboard() {
     }
   };
 
+  const [ratedJobs, setRatedJobs] = React.useState(JSON.parse(localStorage.getItem('ratedBookings') || '[]'));
+
   const handleRating = async (bookingId, workerId) => {
-    const r = prompt('Overall Rating Protocol Framework (1-5):');
+    const r = prompt('Rate this Worker (1-5 Stars):');
     const rr = prompt('Optional diagnostic feedback debriefing:');
     if (r) {
       try {
         await api.post('/ratings', { booking_id: bookingId, worker_id: workerId, rating: r, review: rr });
-        toast.success('Your encrypted metrics integrated safely into the Master Trust Tracker!');
+        toast.success('Thank you! Your rating has been successfully submitted and verified.');
+        const newRated = [...ratedJobs, bookingId];
+        setRatedJobs(newRated);
+        localStorage.setItem('ratedBookings', JSON.stringify(newRated));
         queryClient.invalidateQueries(['customerBookings']);
       } catch(err) { toast.error(err.response?.data?.message || err.response?.data?.error || 'Ratings failed security bounds constraint'); }
     }
@@ -61,7 +66,7 @@ function CustomerDashboard() {
                       <div>
                         <strong style={{ display: 'block', fontSize: '1.1rem', marginBottom: '0.25rem' }}>{b.worker_name} <span style={{ color: 'var(--text-light)', fontWeight: 'normal', fontSize: '0.9rem' }}>({b.category})</span></strong>
                         <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-light)', fontSize: '0.9rem' }}>{b.description}</p>
-                        <p style={{ margin: 0, fontSize: '0.85rem' }}>Start Trace: {new Date(b.start_time).toLocaleString()}</p>
+                        <p style={{ margin: 0, fontSize: '0.85rem' }}>Booking Date: {new Date(b.start_time).toLocaleString()}</p>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <span className={`badge ${b.status.toLowerCase()}`}>{b.status}</span>
@@ -71,12 +76,12 @@ function CustomerDashboard() {
                     </li>
                   ))}
                 </ul>
-              ) : <p style={{ color: 'var(--text-light)' }}>Zero scheduled logic bounds exist mapping.</p>}
+              ) : <p style={{ color: 'var(--text-light)' }}>You have no active bookings in your workspace.</p>}
             </div>
           </div>
 
           <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)' }}>
-             <h3 style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px dashed var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0 }}><FaHistory color="var(--primary)"/> Validated Historical Executions</h3>
+             <h3 style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px dashed var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0 }}><FaHistory color="var(--primary)"/> Past Service History</h3>
              <div style={{ padding: '1.5rem' }}>
                {pastBookings.length > 0 ? (
                  <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -86,12 +91,18 @@ function CustomerDashboard() {
                           <strong style={{ fontSize: '1.1rem' }}>{b.worker_name}</strong>
                           <span className={`badge ${b.status.toLowerCase()}`}>{b.status}</span>
                         </div>
-                        <p style={{ margin: '0 0 1rem 0', color: 'var(--text-light)', fontSize: '0.9rem' }}>Terminated Logic: {new Date(b.end_time).toLocaleString()}</p>
-                        {b.status === 'Completed' && <button className="btn btn-secondary" onClick={() => handleRating(b.id, b.worker_id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}><FaStar color="#f59e0b" /> Submit Mathematical Trust Factor Output</button>}
+                        <p style={{ margin: '0 0 1rem 0', color: 'var(--text-light)', fontSize: '0.9rem' }}>Completed On: {b.end_time ? new Date(b.end_time).toLocaleDateString() : (b.updated_at ? new Date(b.updated_at).toLocaleDateString() : new Date().toLocaleDateString())}</p>
+                        {b.status === 'Completed' && (
+                          ratedJobs.includes(b.id) ? (
+                             <div style={{ textAlign: 'center', color: '#10b981', fontWeight: 'bold', padding: '0.75rem', background: '#ecfdf5', borderRadius: '6px', border: '1px solid #a7f3d0' }}><FaCheckCircle /> Rating Successfully Submitted</div>
+                          ) : (
+                             <button className="btn btn-secondary" onClick={() => handleRating(b.id, b.worker_id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}><FaStar color="#f59e0b" /> Rate this Worker</button>
+                          )
+                        )}
                      </li>
                    ))}
                   </ul>
-               ) : <p style={{ color: 'var(--text-light)' }}>Past contract hash table empty.</p>}
+               ) : <p style={{ color: 'var(--text-light)' }}>You have no completed jobs on record.</p>}
              </div>
           </div>
         </div>

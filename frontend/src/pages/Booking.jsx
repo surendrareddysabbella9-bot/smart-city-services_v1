@@ -42,55 +42,55 @@ function Booking() {
   return (
     <div className="container" style={{ maxWidth: '700px' }}>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Secure Reservation Boundary Framework</h1>
-        <p style={{ color: 'var(--text-light)' }}>Executing targeted contract logic for <strong style={{ color: 'var(--text)' }}>{worker?.name}</strong> • {worker?.category}</p>
+        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Book a Professional</h1>
+        <p style={{ color: 'var(--text-light)' }}>Securely booking <strong style={{ color: 'var(--text)' }}>{worker?.name}</strong> • {worker?.category}</p>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2.5rem', padding: '0 2rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: step >= 1 ? 1 : 0.4 }}>
           <div style={{ width: '40px', height: '40px', background: step >= 1 ? 'var(--primary)' : 'var(--background)', color: step >= 1 ? 'white' : 'var(--text-light)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem', fontWeight: 'bold' }}>1</div>
-          <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Interval Sync</span>
+          <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Select Date & Time</span>
         </div>
         <div style={{ flex: 1, height: '4px', background: step >= 2 ? 'var(--primary)' : 'var(--border)', margin: '18px 1rem 0 1rem', borderRadius: '2px' }}></div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: step >= 2 ? 1 : 0.4 }}>
           <div style={{ width: '40px', height: '40px', background: step >= 2 ? 'var(--primary)' : 'var(--background)', color: step >= 2 ? 'white' : 'var(--text-light)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem', fontWeight: 'bold' }}>2</div>
-          <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Project Vector</span>
+          <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Job Details</span>
         </div>
         <div style={{ flex: 1, height: '4px', background: step >= 3 ? 'var(--primary)' : 'var(--border)', margin: '18px 1rem 0 1rem', borderRadius: '2px' }}></div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: step >= 3 ? 1 : 0.4 }}>
           <div style={{ width: '40px', height: '40px', background: step >= 3 ? 'var(--primary)' : 'var(--background)', color: step >= 3 ? 'white' : 'var(--text-light)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem', fontWeight: 'bold' }}>3</div>
-          <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Verification Hash</span>
+          <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Confirm Booking</span>
         </div>
       </div>
 
       <div className="card" style={{ padding: '2.5rem', borderTop: '4px solid var(--primary)', borderRadius: '8px' }}>
         {step === 1 && (
           <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}><FaCalendarAlt color="var(--primary)" /> Select Resource Schedule Limits</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}><FaCalendarAlt color="var(--primary)" /> Select Appointment Time</h3>
             <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label>Service Initiation Target (Start)</label>
+              <label>Expected Start Time</label>
               <input type="datetime-local" value={form.start_time} onChange={e=>setForm({...form, start_time: e.target.value})} style={{ padding: '0.75rem', fontSize: '1rem', border: '1px solid var(--border)', borderRadius: '4px' }} />
             </div>
             <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label>Service Conclusion Target (End)</label>
+              <label>Expected End Time</label>
               <input type="datetime-local" value={form.end_time} onChange={e=>setForm({...form, end_time: e.target.value})} style={{ padding: '0.75rem', fontSize: '1rem', border: '1px solid var(--border)', borderRadius: '4px' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2.5rem' }}>
-              <button disabled={!form.start_time || !form.end_time} className="btn" onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Validate Temporal Limits <FaArrowRight /></button>
+              <button disabled={!form.start_time || !form.end_time} className="btn" onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Confirm Time <FaArrowRight /></button>
             </div>
           </div>
         )}
 
         {step === 2 && (
           <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}><FaClipboardList color="var(--primary)" /> Project Operational Definition</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}><FaClipboardList color="var(--primary)" /> Describe Your Job</h3>
             <div className="form-group">
-              <label>Explicit Task Breakdown Ledger</label>
-              <textarea rows="5" placeholder="Specify exactly what physical configurations need intervention..." value={form.description} onChange={e=>setForm({...form, description: e.target.value})} style={{ padding: '1rem', fontSize: '1rem', border: '1px solid var(--border)', borderRadius: '4px' }}></textarea>
+              <label>Job Description</label>
+              <textarea rows="5" placeholder="Provide a brief summary of the exact service you need..." value={form.description} onChange={e=>setForm({...form, description: e.target.value})} style={{ padding: '1rem', fontSize: '1rem', border: '1px solid var(--border)', borderRadius: '4px' }}></textarea>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2.5rem' }}>
-              <button className="btn btn-secondary" onClick={() => setStep(1)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FaArrowLeft /> Retract to Limits</button>
-              <button disabled={!form.description} className="btn" onClick={() => setStep(3)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Verify Payload Data <FaArrowRight /></button>
+              <button className="btn btn-secondary" onClick={() => setStep(1)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FaArrowLeft /> Back</button>
+              <button disabled={!form.description} className="btn" onClick={() => setStep(3)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Continue to Review <FaArrowRight /></button>
             </div>
           </div>
         )}
@@ -98,18 +98,20 @@ function Booking() {
         {step === 3 && (
           <div style={{ animation: 'fadeIn 0.3s ease-out', textAlign: 'center' }}>
             <FaCheckCircle color="#10b981" size={72} style={{ marginBottom: '1.5rem' }} />
-            <h3 style={{ marginBottom: '2rem' }}>Final Contract Cryptographic Review</h3>
+            <h3 style={{ marginBottom: '1rem' }}>Final Booking Review</h3>
+            <p style={{ color: '#64748b', marginBottom: '2rem' }}>Please verify your service parameters directly before confirming.</p>
             
             <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', textAlign: 'left', marginBottom: '2.5rem', border: '1px solid var(--border)' }}>
-               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '120px', display: 'inline-block' }}>Target Hash:</strong> {worker?.name} ({worker?.category})</p>
-               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '120px', display: 'inline-block' }}>Lock In Start:</strong> {new Date(form.start_time).toLocaleString()}</p>
-               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '120px', display: 'inline-block' }}>Lock In End:</strong> {new Date(form.end_time).toLocaleString()}</p>
-               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '120px', display: 'inline-block' }}>Scope Array:</strong> {form.description}</p>
+               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '130px', display: 'inline-block' }}>Service Provider:</strong> {worker?.name} ({worker?.category})</p>
+               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '130px', display: 'inline-block' }}>Start Time:</strong> {new Date(form.start_time).toLocaleString()}</p>
+               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '130px', display: 'inline-block' }}>End Time:</strong> {new Date(form.end_time).toLocaleString()}</p>
+               <p style={{ margin: '0 0 0.75rem 0' }}><strong style={{ color: 'var(--text-light)', minWidth: '130px', display: 'inline-block' }}>Est. Total Cost:</strong> TBD - Awaiting Professional Final Estimate</p>
+               <p style={{ margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'flex-start' }}><strong style={{ color: 'var(--text-light)', minWidth: '130px', display: 'inline-block', flexShrink: 0 }}>Job Description:</strong> <span>{form.description}</span></p>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <button className="btn btn-secondary" onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FaArrowLeft /> Update Parameters</button>
-              <button className="btn" onClick={handleSubmit} style={{ background: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>Lock Execution Logic <FaCheckCircle /></button>
+              <button className="btn btn-secondary" onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FaArrowLeft /> Back to Job Details</button>
+              <button className="btn" onClick={handleSubmit} style={{ background: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>Confirm & Book Now <FaCheckCircle /></button>
             </div>
           </div>
         )}
