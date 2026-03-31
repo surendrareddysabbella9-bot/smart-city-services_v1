@@ -4,9 +4,9 @@ import { register, login, getProfile, updateProfile } from '../controllers/authC
 import { authenticate } from '../middleware/authMiddleware.js';
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { success: false, error: 'Maximum auth attempts exceeded. Blocked.' }
+  windowMs: 5 * 60 * 1000, 
+  max: 100, 
+  message: { success: false, error: 'Maximum auth parameter constraints exceeded securely remotely. Suspended.' }
 });
 
 const router = express.Router();

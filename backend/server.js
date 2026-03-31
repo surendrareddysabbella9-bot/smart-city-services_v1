@@ -21,6 +21,8 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Explicitly map authentic IPs traversing Render TCP load balancers globally
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
 
