@@ -131,9 +131,6 @@ function CustomerDashboard() {
       )}
     </div>
   );
-        </div>
-      )}
-    </div>
-  );
 }
+
 export default CustomerDashboard;
