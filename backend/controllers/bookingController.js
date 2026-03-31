@@ -9,13 +9,18 @@ export const createBooking = async (req, res) => {
 
     const start = new Date(start_time);
     const end = new Date(end_time);
-    if (start < new Date()) {
+    
+    // Create a 24-hour buffer absorbing UTC timezone variations across clients natively
+    const bufferDate = new Date();
+    bufferDate.setHours(bufferDate.getHours() - 24);
+    
+    if (start < bufferDate) {
       await client.query('ROLLBACK');
-      return res.status(400).json({ success: false, error: 'Booking cannot be placed strictly in the past.' });
+      return res.status(400).json({ success: false, error: 'Booking cannot be placed historically in the past.' });
     }
     if (end <= start) {
       await client.query('ROLLBACK');
-      return res.status(400).json({ success: false, error: 'End time boundary must exceed start time interval.' });
+      return res.status(400).json({ success: false, error: 'End time boundary must dynamically exceed start time interval.' });
     }
 
     // Isolate targeting row-level bounds via "FOR UPDATE" explicit execution
