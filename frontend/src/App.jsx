@@ -22,6 +22,11 @@ import WorkerProfile from './pages/WorkerProfile';
 
 const queryClient = new QueryClient();
 
+const OptionalDashboardLayout = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? <DashboardLayout>{children}</DashboardLayout> : children;
+};
+
 const PrivateRoute = ({ children, role }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -36,12 +41,12 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<OptionalDashboardLayout><Home /></OptionalDashboardLayout>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/workers" element={<WorkerListing />} />
-          <Route path="/book/:workerId" element={<PrivateRoute><Booking /></PrivateRoute>} />
-          <Route path="/worker/:id" element={<WorkerProfile />} />
+          <Route path="/workers" element={<OptionalDashboardLayout><WorkerListing /></OptionalDashboardLayout>} />
+          <Route path="/book/:workerId" element={<PrivateRoute><DashboardLayout><Booking /></DashboardLayout></PrivateRoute>} />
+          <Route path="/worker/:id" element={<OptionalDashboardLayout><WorkerProfile /></OptionalDashboardLayout>} />
           <Route path="/dashboard/customer" element={<PrivateRoute role="Customer"><DashboardLayout><CustomerDashboard /></DashboardLayout></PrivateRoute>} />
           <Route path="/dashboard/worker" element={<PrivateRoute role="Worker"><DashboardLayout><WorkerDashboard /></DashboardLayout></PrivateRoute>} />
           <Route path="/dashboard/admin" element={<PrivateRoute role="Admin"><DashboardLayout><AdminDashboard /></DashboardLayout></PrivateRoute>} />

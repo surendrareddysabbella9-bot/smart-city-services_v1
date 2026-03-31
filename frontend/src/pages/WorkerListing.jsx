@@ -7,6 +7,7 @@ import WorkerCard from '../components/WorkerCard';
 function WorkerListing() {
   const [filter, setFilter] = useState('');
   const [search, setSearch] = useState('');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
   
   const { data, isLoading, isError } = useQuery({
     queryKey: ['workers', filter, search],
@@ -58,7 +59,7 @@ function WorkerListing() {
         </div>
       ) : data?.length > 0 ? (
         <div className="grid">
-          {data.map(worker => (
+          {data.filter(w => w.user_id !== user?.id).map(worker => (
             <WorkerCard key={worker.id} worker={worker} />
           ))}
         </div>
