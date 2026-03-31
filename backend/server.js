@@ -12,6 +12,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import alertRoutes from './routes/alertRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import performanceRoutes from './routes/performanceRoutes.js';
+import { errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
 

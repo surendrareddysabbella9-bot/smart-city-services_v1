@@ -1,11 +1,18 @@
 import pool from '../database.js';
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const offset = (page - 1) * limit;
+
   try {
-    const users = await pool.query('SELECT id, name, email, phone, role, created_at FROM Users');
-    res.json(users.rows);
+    const countRes = await pool.query('SELECT COUNT(*) FROM Users WHERE is_deleted = false');
+    const total = parseInt(countRes.rows[0].count);
+    
+    const users = await pool.query('SELECT id, name, email, phone, role, created_at FROM Users WHERE is_deleted = false ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    res.json({ success: true, data: { users: users.rows, total, page, pages: Math.ceil(total / limit) }, error: null });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 

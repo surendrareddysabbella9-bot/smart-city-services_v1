@@ -14,8 +14,10 @@ function WorkerListing() {
 
   const fetchWorkers = async () => {
     try {
-      const res = await api.get(`/workers${category ? `?category=${category}` : ''}`);
-      setWorkers(res.data);
+      // Hardcoded to natively pull unified paginated standard logic block.
+      const url = category ? `/workers?category=${category}&limit=20&page=1` : '/workers?limit=20&page=1';
+      const res = await api.get(url);
+      setWorkers(res.data.data ? res.data.data.workers : res.data);
     } catch (err) {
       console.error('Failed to fetch workers', err);
     }
