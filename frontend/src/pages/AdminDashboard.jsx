@@ -14,10 +14,10 @@ function AdminDashboard() {
     try {
       const [workersRes, usersRes] = await Promise.all([
         api.get('/admin/workers/pending'),
-        api.get('/admin/users')
+        api.get('/admin/users?limit=50&page=1')
       ]);
-      setPendingWorkers(workersRes.data);
-      setUsers(usersRes.data);
+      setPendingWorkers(workersRes.data.data ? workersRes.data.data : workersRes.data);
+      setUsers(usersRes.data.data ? usersRes.data.data.users : usersRes.data);
     } catch (err) {
       console.error(err);
     }
