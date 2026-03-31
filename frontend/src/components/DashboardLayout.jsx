@@ -12,19 +12,20 @@ function DashboardLayout({ children }) {
   return (
     <div className="dashboard-layout">
       <aside className="sidebar">
-        <div className="sidebar-nav">
-          <div className="nav-section">LOGISTICS CONTROL</div>
+        <nav className="sidebar-nav">
+          <div className="nav-section">GLOBAL DIRECTORY</div>
+          <Link to="/workers" className={`nav-link ${isActive('workers') ? 'active' : ''}`}><FaUserCheck /> Find Service Profiles</Link>
+
+          <div className="nav-section" style={{ marginTop: '1.5rem' }}>LOGISTICS CONTROL</div>
           {user?.role === 'Customer' && (
             <>
               <Link to="/dashboard/customer" className={`nav-link ${(isActive('customer') && !isActive('subscriptions')) ? 'active' : ''}`}><FaCalendarAlt /> Active Encrypted Contracts</Link>
               <Link to="/dashboard/customer/subscriptions" className={`nav-link ${isActive('subscriptions') ? 'active' : ''}`}><FaBriefcase /> Facility Agreements</Link>
-              <Link to="/workers" className="nav-link"><FaUserCheck /> Global Resource Map</Link>
             </>
           )}
           {user?.role === 'Worker' && (
             <>
               <Link to="/dashboard/worker" className={`nav-link ${(isActive('worker') && !isActive('performance')) ? 'active' : ''}`}><FaBriefcase /> Unified Logistics Dashboard</Link>
-              <Link to="/workers" className="nav-link"><FaUserCheck /> Global Resource Map</Link>
               <Link to="/dashboard/worker/performance" className={`nav-link ${isActive('performance') ? 'active' : ''}`}><FaChartBar /> Performance Diagnostics</Link>
             </>
           )}

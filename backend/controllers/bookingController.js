@@ -19,10 +19,14 @@ export const createBooking = async (req, res) => {
     }
 
     // Isolate targeting row-level bounds via "FOR UPDATE" explicit execution
-    const workerCheck = await client.query('SELECT id FROM Workers WHERE id = $1 FOR UPDATE', [worker_id]);
+    const workerCheck = await client.query('SELECT id, user_id FROM Workers WHERE id = $1 FOR UPDATE', [worker_id]);
     if (workerCheck.rows.length === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ success: false, error: 'Target Worker context absent block failed.' });
+    }
+    if (workerCheck.rows[0].user_id === req.user.id) {
+      await client.query('ROLLBACK');
+      return res.status(403).json({ success: false, error: 'Self-booking assignments strictly mathematically rejected.' });
     }
 
     // Mathematical Conflict Resolution
@@ -44,7 +48,13 @@ export const createBooking = async (req, res) => {
     if (fallbackCheck.rows.length > 0) {
         executing_customer_id = fallbackCheck.rows[0].id;
     } else {
-        const newCustomerNode = await client.query('INSERT INTO Customers (user_id, location) VALUES ($1, $2) RETURNING id', [req.user.id, 'Dual-Role Operations']);
+        // Handled dynamic parallel race execution using ON CONFLICT logic boundaries natively
+        const newCustomerNode = await client.query(`
+            INSERT INTO Customers (user_id, location) 
+            VALUES ($1, $2) 
+            ON CONFLICT (user_id) DO UPDATE SET location = EXCLUDED.location 
+            RETURNING id
+        `, [req.user.id, 'Dual-Role Operations']);
         executing_customer_id = newCustomerNode.rows[0].id;
     }
 
@@ -105,6 +115,23 @@ export const updateBookingStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
+    const authQuery = await pool.query(`
+      SELECT b.id, 
+             w.user_id as worker_uid,
+             c.user_id as customer_uid
+      FROM Bookings b
+      JOIN Workers w ON b.worker_id = w.id
+      JOIN Customers c ON b.customer_id = c.id
+      WHERE b.id = $1
+    `, [id]);
+    
+    if (authQuery.rows.length === 0) return res.status(404).json({ error: 'Binding matrix absent.' });
+    const binding = authQuery.rows[0];
+    
+    if (binding.worker_uid !== req.user.id && binding.customer_uid !== req.user.id) {
+      return res.status(403).json({ error: 'Cryptographic restriction: Client lacked ownership scope over these execution parameters.' });
+    }
+
     await pool.query('UPDATE Bookings SET status = $1 WHERE id = $2', [status, id]);
 
     if (status === 'Completed') {

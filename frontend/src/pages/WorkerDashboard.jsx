@@ -47,10 +47,10 @@ function WorkerDashboard() {
       
       <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.25rem', marginBottom: '2.5rem' }}>
          <button onClick={() => setActiveTab('incoming')} className={`btn ${activeTab !== 'incoming' ? 'btn-ghost' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1.75rem', borderRadius: '8px', fontSize: '1rem' }}>
-            <FaBriefcase /> Incoming Jobs ({jobs.length})
+            <FaBriefcase /> Jobs Assigned to Me ({jobs.length})
          </button>
          <button onClick={() => setActiveTab('bookings')} className={`btn ${activeTab !== 'bookings' ? 'btn-ghost' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1.75rem', borderRadius: '8px', background: activeTab === 'bookings' ? '#10b981' : 'transparent', color: activeTab === 'bookings' ? 'white' : 'var(--text-light)', fontSize: '1rem' }}>
-            <FaCalendarAlt /> My Bookings as Client ({myBookings.length})
+            <FaCalendarAlt /> My Service Requests ({myBookings.length})
          </button>
       </div>
 
