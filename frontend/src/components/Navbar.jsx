@@ -15,12 +15,13 @@ function Navbar() {
     <nav className="navbar">
       <Link to="/" className="navbar-brand">Smart City Services</Link>
       <div className="navbar-links">
-        {user?.role === 'Customer' && <Link to="/workers">Find Workers</Link>}
+        <Link to="/workers">Find Workers</Link>
         {user ? (
           <div className="navbar-user">
             {user.role === 'Admin' && <Link to="/dashboard/admin">Admin Dashboard</Link>}
             {user.role === 'Worker' && <Link to="/dashboard/worker">Worker Dashboard</Link>}
             {user.role === 'Customer' && <Link to="/dashboard/customer">My Bookings</Link>}
+            {user.role !== 'Admin' && <Link to="/profile" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', width: 'auto', background: 'transparent', color: 'var(--text)' }}>👤 Profile</Link>}
             <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '0.4rem 1rem', width: 'auto' }}>Logout</button>
           </div>
         ) : (

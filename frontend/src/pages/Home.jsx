@@ -9,7 +9,9 @@ function Home() {
         <p>Connect with the best verified professionals for all your home and office needs.</p>
         <div style={{ marginTop: '2rem' }}>
           <Link to="/workers" className="btn" style={{ width: 'auto', marginRight: '1rem', fontSize: '1.1rem' }}>Find a Worker</Link>
-          <Link to="/register" className="btn btn-secondary" style={{ width: 'auto', fontSize: '1.1rem' }}>Join as a Worker</Link>
+          {!localStorage.getItem('user') && (
+            <Link to="/register" className="btn btn-secondary" style={{ width: 'auto', fontSize: '1.1rem' }}>Join as a Worker</Link>
+          )}
         </div>
       </div>
       <div className="container">

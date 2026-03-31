@@ -40,7 +40,6 @@ function CustomerDashboard() {
 
   return (
     <div className="container">
-      <ProfileEditor userRole="Customer" />
       <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="dashboard-title">My Bookings</h1>
         <Link to="/dashboard/customer/subscriptions" className="btn">Manage Subscriptions</Link>

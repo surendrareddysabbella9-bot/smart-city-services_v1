@@ -13,6 +13,15 @@ export const authenticate = (req, res, next) => {
   }
 };
 
+export const optionalAuth = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return next();
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+  } catch (err) {}
+  next();
+};
+
 export const authorize = (roles = []) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

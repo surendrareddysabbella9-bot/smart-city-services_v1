@@ -32,7 +32,6 @@ function WorkerDashboard() {
 
   return (
     <div className="container">
-      <ProfileEditor userRole="Worker" />
       <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="dashboard-title">My Jobs</h1>
         <Link to="/dashboard/worker/performance" className="btn">Performance Insights</Link>
