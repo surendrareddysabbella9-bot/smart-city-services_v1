@@ -17,10 +17,13 @@ function Navbar() {
       <div className="navbar-links">
         {user ? (
           <div className="navbar-user">
-            <Link to="/profile" title="Profile Settings" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #8b5cf6)', color: 'white', fontWeight: 'bold', fontSize: '1.2rem', textDecoration: 'none', boxShadow: '0 3px 8px rgba(59,130,246,0.25)', marginRight: '1rem', border: '2px solid white' }}>
+            <Link to="/profile" title="Profile Settings" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #8b5cf6)', color: 'white', fontWeight: 'bold', fontSize: '1.2rem', textDecoration: 'none', boxShadow: '0 3px 8px rgba(59,130,246,0.25)', marginRight: '0.75rem', border: '2px solid white' }}>
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </Link>
-            <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '0.45rem 1.25rem', width: 'auto', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-light)', borderRadius: '6px' }}>Logout</button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+               <strong style={{ fontSize: '0.90rem', color: 'var(--text)' }}>{user?.name?.split(' ')[0]}</strong>
+               <button onClick={handleLogout} style={{ padding: 0, width: 'auto', background: 'transparent', border: 'none', color: '#ef4444', fontSize: '0.70rem', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold' }}>Sign out</button>
+            </div>
           </div>
         ) : (
           <>

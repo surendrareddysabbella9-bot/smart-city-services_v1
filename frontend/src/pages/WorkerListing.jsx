@@ -25,24 +25,24 @@ function WorkerListing() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="dashboard-title" style={{ margin: 0 }}>Discover Professionals</h1>
         
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <div style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
             <FaSearch style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
             <input 
               type="text" 
-              placeholder="Search by name..." 
+              placeholder="Search by name or category..." 
               value={search} 
               onChange={(e) => setSearch(e.target.value)}
-              style={{ paddingLeft: '2.5rem', height: '100%', border: '1px solid var(--border)', borderRadius: '4px' }}
+              style={{ paddingLeft: '2.8rem', paddingRight: '1rem', height: '42px', width: '100%', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '0.95rem' }}
             />
           </div>
           
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ padding: '0.6rem 1rem', border: '1px solid var(--border)', borderRadius: '4px', minWidth: '180px' }}>
-            <option value="">All Verification Categories</option>
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ padding: '0 1rem', height: '42px', border: '1px solid var(--border)', borderRadius: '8px', minWidth: '140px', fontSize: '0.95rem', background: 'white' }}>
+            <option value="">All Categories</option>
             <option value="Electrician">Electrician</option>
             <option value="Plumber">Plumber</option>
             <option value="Painter">Painter</option>
-            <option value="Maintenance Worker">Maintenance Worker Analytics</option>
+            <option value="Maintenance Worker">Maintenance Node</option>
           </select>
         </div>
       </div>
@@ -66,8 +66,8 @@ function WorkerListing() {
       ) : (
         <div style={{ padding: '4rem', textAlign: 'center', background: 'var(--surface)', borderRadius: '8px', border: '1px dashed var(--border)' }}>
           <FaFilter size={48} color="var(--border)" style={{ marginBottom: '1.5rem' }} />
-          <h3>No matches mapped to logic</h3>
-          <p style={{ color: 'var(--text-light)' }}>Try expanding your search criteria bounding boxes.</p>
+          <h3>No workers found</h3>
+          <p style={{ color: 'var(--text-light)' }}>Try adjusting your search filters to find more available professionals.</p>
         </div>
       )}
     </div>
