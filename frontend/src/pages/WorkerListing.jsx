@@ -55,7 +55,7 @@ function WorkerListing() {
         </div>
       ) : isError ? (
         <div style={{ padding: '2rem', textAlign: 'center', color: '#dc2626', background: '#fee2e2', borderRadius: '8px', border: '1px solid #f87171' }}>
-          Secure routing failed. Please try synchronizing your network connectivity payload.
+          Failed to load worker profiles. Please try again.
         </div>
       ) : data?.length > 0 ? (
         <div className="grid">

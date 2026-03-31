@@ -43,7 +43,7 @@ function WorkerDashboard() {
 
   return (
     <div className="container" style={{ maxWidth: '1000px' }}>
-      <h1 className="dashboard-title" style={{ marginBottom: '2rem', fontSize: '2rem' }}>Logistics Central Node</h1>
+      <h1 className="dashboard-title" style={{ marginBottom: '2rem', fontSize: '2rem' }}>My Dashboard</h1>
       
       <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.25rem', marginBottom: '2.5rem' }}>
          <button onClick={() => setActiveTab('incoming')} className={`btn ${activeTab !== 'incoming' ? 'btn-ghost' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1.75rem', borderRadius: '8px', fontSize: '1rem' }}>
@@ -61,19 +61,19 @@ function WorkerDashboard() {
                 {jobs.map(job => (
                    <div key={job.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem', borderBottom: '1px solid var(--border)', background: 'white' }}>
                      <div>
-                       <strong style={{ display: 'block', fontSize: '1.15rem', marginBottom: '0.35rem' }}>{job.customer_name} <span style={{ color: 'var(--text-light)', fontWeight: 'normal', fontSize: '0.9rem' }}>({job.customer_phone})</span></strong>
+                       <strong style={{ display: 'block', fontSize: '1.15rem', marginBottom: '0.35rem' }}>{job.customer_name} {job.status !== 'Pending' && <span style={{ color: 'var(--text-light)', fontWeight: 'normal', fontSize: '0.9rem' }}>({job.customer_phone})</span>}</strong>
                        <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontStyle: 'italic', lineHeight: '1.4' }}>"{job.description}"</p>
-                       <p style={{ margin: 0, fontSize: '0.85rem' }}>Target Temporal Bound: {job.start_time ? new Date(job.start_time).toLocaleString() : 'Legacy Timing'}</p>
+                       <p style={{ margin: 0, fontSize: '0.85rem' }}>Start Time: {job.start_time ? new Date(job.start_time).toLocaleString() : 'Not set'}</p>
                      </div>
                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexDirection: 'column' }}>
                        <span className={`badge ${job.status.toLowerCase()}`} style={{ width: '100%', textAlign: 'center', padding: '0.4rem 1rem' }}>{job.status}</span>
-                       {job.status === 'Pending' && <button onClick={() => updateJobStatus(job.id, 'Accepted')} className="btn btn-outline" style={{ padding: '0.4rem 1.25rem', fontSize: '0.85rem', width: '100%' }}>Lock Allocation</button>}
-                       {job.status === 'Accepted' && <button onClick={() => updateJobStatus(job.id, 'Completed')} className="btn" style={{ background: '#10b981', padding: '0.4rem 1.25rem', fontSize: '0.85rem', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}><FaCheckCircle size={14} /> Terminate Frame</button>}
+                       {job.status === 'Pending' && <button onClick={() => updateJobStatus(job.id, 'Accepted')} className="btn btn-outline" style={{ padding: '0.4rem 1.25rem', fontSize: '0.85rem', width: '100%' }}>Accept Job</button>}
+                       {job.status === 'Accepted' && <button onClick={() => updateJobStatus(job.id, 'Completed')} className="btn" style={{ background: '#10b981', padding: '0.4rem 1.25rem', fontSize: '0.85rem', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}><FaCheckCircle size={14} /> Mark Completed</button>}
                      </div>
                    </div>
                 ))}
              </div>
-          ) : <EmptyState title="No Task Assignments" description="The network algorithms register zero incoming service requests targeting your execution module." />}
+          ) : <EmptyState title="No Jobs Assigned" description="You have no incoming or assigned jobs at the moment." />}
         </div>
       )}
 
@@ -86,16 +86,16 @@ function WorkerDashboard() {
                      <div>
                        <strong style={{ display: 'block', fontSize: '1.15rem', marginBottom: '0.35rem' }}>{b.worker_name} <span style={{ color: '#8b5cf6', fontWeight: 'bold', fontSize: '0.9rem', background: '#f5f3ff', padding: '0.25rem 0.5rem', borderRadius: '8px', marginLeft: '0.25rem' }}>{b.category}</span></strong>
                        <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontStyle: 'italic', lineHeight: '1.4' }}>"{b.description}"</p>
-                       <p style={{ margin: 0, fontSize: '0.85rem' }}>Locked Start Boundary: {b.start_time ? new Date(b.start_time).toLocaleString() : 'Legacy Timing'}</p>
+                       <p style={{ margin: 0, fontSize: '0.85rem' }}>Start Time: {b.start_time ? new Date(b.start_time).toLocaleString() : 'Not set'}</p>
                      </div>
                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexDirection: 'column' }}>
                        <span className={`badge ${b.status.toLowerCase()}`} style={{ width: '100%', textAlign: 'center', padding: '0.4rem 1rem' }}>{b.status}</span>
-                       {b.status === 'Pending' && <button onClick={() => cancelMyBooking(b.id)} className="btn btn-secondary" style={{ padding: '0.4rem 1.25rem', fontSize: '0.85rem', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.4rem' }}><FaTimesCircle size={14} /> Abort Binding</button>}
+                       {b.status === 'Pending' && <button onClick={() => cancelMyBooking(b.id)} className="btn btn-secondary" style={{ padding: '0.4rem 1.25rem', fontSize: '0.85rem', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.4rem' }}><FaTimesCircle size={14} /> Cancel Request</button>}
                      </div>
                    </div>
                 ))}
              </div>
-          ) : <EmptyState title="No Active Client Requests" description="You have not requested any external resource tasks successfully across your profile configuration block." />}
+          ) : <EmptyState title="No Service Requests" description="You haven't requested any services from other workers yet." />}
         </div>
       )}
     </div>
