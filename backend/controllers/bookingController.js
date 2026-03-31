@@ -119,8 +119,9 @@ export const getWorkerBookings = async (req, res) => {
 export const updateBookingStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
+  const client = await pool.connect();
   try {
-    const authQuery = await pool.query(`
+    const authQuery = await client.query(`
       SELECT b.id, 
              w.user_id as worker_uid,
              c.user_id as customer_uid
@@ -130,17 +131,21 @@ export const updateBookingStatus = async (req, res) => {
       WHERE b.id = $1
     `, [id]);
     
-    if (authQuery.rows.length === 0) return res.status(404).json({ error: 'Binding matrix absent.' });
+    if (authQuery.rows.length === 0) {
+      return res.status(404).json({ error: 'Binding matrix absent.' });
+    }
     const binding = authQuery.rows[0];
     
     if (binding.worker_uid !== req.user.id && binding.customer_uid !== req.user.id) {
       return res.status(403).json({ error: 'Cryptographic restriction: Client lacked ownership scope over these execution parameters.' });
     }
 
-    await pool.query('UPDATE Bookings SET status = $1 WHERE id = $2', [status, id]);
+    await client.query('BEGIN');
+
+    await client.query('UPDATE Bookings SET status = $1 WHERE id = $2', [status, id]);
 
     if (status === 'Completed') {
-      const bookingRes = await pool.query(`
+      const bookingRes = await client.query(`
         SELECT b.worker_id, w.category as service_type
         FROM Bookings b
         JOIN Workers w ON b.worker_id = w.id
@@ -149,13 +154,14 @@ export const updateBookingStatus = async (req, res) => {
       const booking = bookingRes.rows[0];
 
       if (booking) {
-        await pool.query(`
+        await client.query(`
           INSERT INTO job_history (worker_id, booking_id, service_type)
           VALUES ($1, $2, $3)
+          ON CONFLICT DO NOTHING
         `, [booking.worker_id, id, booking.service_type]);
 
-        const totalAcceptedRes = await pool.query(`SELECT COUNT(*) as count FROM Bookings WHERE worker_id = $1 AND status != 'Pending'`, [booking.worker_id]);
-        const totalCompletedRes = await pool.query(`SELECT COUNT(*) as count FROM Bookings WHERE worker_id = $1 AND status = 'Completed'`, [booking.worker_id]);
+        const totalAcceptedRes = await client.query(`SELECT COUNT(*) as count FROM Bookings WHERE worker_id = $1 AND status != 'Pending'`, [booking.worker_id]);
+        const totalCompletedRes = await client.query(`SELECT COUNT(*) as count FROM Bookings WHERE worker_id = $1 AND status = 'Completed'`, [booking.worker_id]);
         
         const totalAccepted = parseInt(totalAcceptedRes.rows[0].count) || 1;
         const totalCompleted = parseInt(totalCompletedRes.rows[0].count) || 0;
@@ -163,7 +169,7 @@ export const updateBookingStatus = async (req, res) => {
 
         const trustChange = (completionRate >= 90) ? 5 : (completionRate > 50 ? 1 : -5);
         
-        await pool.query(`
+        await client.query(`
           UPDATE Workers 
           SET total_jobs = $1, completion_rate = $2, trust_score = LEAST(trust_score + $3, 100)
           WHERE id = $4
@@ -171,8 +177,12 @@ export const updateBookingStatus = async (req, res) => {
       }
     }
 
-    res.json({ message: 'Booking status updated' });
+    await client.query('COMMIT');
+    res.json({ message: 'Booking status updated successfully via atomic transaction' });
   } catch (err) {
+    await client.query('ROLLBACK');
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 };

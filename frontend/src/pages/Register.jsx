@@ -11,6 +11,7 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,11 +22,15 @@ function Register() {
       setError('Passwords do not match. Please verify your typed inputs.');
       return;
     }
+    setLoading(true);
+    setError('');
     try {
       await api.post('/auth/register', formData);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || err.response?.data?.message || 'Registration failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,7 +136,9 @@ function Register() {
              </p>
           </div>
 
-          <button type="submit" className="btn" style={{ width: '100%', padding: '0.85rem', fontSize: '1.05rem', fontWeight: 'bold', marginTop: '0.5rem', borderRadius: '6px' }}>Complete Registration</button>
+          <button type="submit" disabled={loading} className="btn" style={{ width: '100%', padding: '0.85rem', fontSize: '1.05rem', fontWeight: 'bold', marginTop: '0.5rem', borderRadius: '6px', opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}>
+            {loading ? 'Creating Credentials...' : 'Complete Registration'}
+          </button>
         </form>
 
         <p style={{ textAlign: 'center', margin: '1.5rem 0 0 0', fontSize: '0.95rem', color: '#64748b' }}>

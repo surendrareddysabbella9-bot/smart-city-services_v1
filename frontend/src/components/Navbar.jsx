@@ -27,8 +27,8 @@ function Navbar() {
           </div>
         ) : (
           <>
-            <Link to="/workers" style={{ marginRight: '1.5rem', fontWeight: 'bold', color: 'var(--text-light)', textDecoration: 'none', transition: 'color 0.2s' }}>Find Workers</Link>
-            <Link to="/login" className="btn btn-outline" style={{ padding: '0.4rem 1.25rem', width: 'auto', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', marginRight: '0.75rem' }}>Log In</Link>
+            <Link to="/workers" className="btn btn-outline" style={{ marginRight: '1rem', padding: '0.4rem 1.25rem', width: 'auto', border: '1.5px solid var(--primary)', color: 'var(--primary)', fontWeight: 'bold' }}>Find Professionals</Link>
+            <Link to="/login" style={{ marginRight: '1.5rem', fontWeight: 'bold', color: 'var(--text-light)', textDecoration: 'none' }}>Log In</Link>
             <Link to="/register" className="btn" style={{ padding: '0.4rem 1.25rem', width: 'auto', boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)' }}>Sign Up Free</Link>
           </>
         )}

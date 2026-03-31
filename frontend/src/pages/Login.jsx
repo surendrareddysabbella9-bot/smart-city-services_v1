@@ -8,10 +8,13 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       const res = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', res.data.token);
@@ -22,6 +25,8 @@ function Login() {
       else navigate('/dashboard/customer');
     } catch (err) {
       setError(err.response?.data?.error || err.response?.data?.message || 'Authentication sequence failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,7 +49,7 @@ function Login() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                <label style={{ fontWeight: '600', color: '#334155', fontSize: '0.9rem' }}>Password</label>
-               <span style={{ fontSize: '0.85rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: '500' }}>Forgot Password?</span>
+               <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: '500', textDecoration: 'none' }}>Forgot Password?</Link>
             </div>
             <div style={{ position: 'relative' }}>
               <input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} required style={{...inputStyle, paddingRight: '2.5rem'}} placeholder="••••••••" />
@@ -59,7 +64,9 @@ function Login() {
              <label htmlFor="remember" style={{ fontSize: '0.9rem', color: '#475569', cursor: 'pointer' }}>Remember me for 30 days</label>
           </div>
 
-          <button type="submit" className="btn" style={{ width: '100%', padding: '0.85rem', fontSize: '1.05rem', fontWeight: 'bold', marginTop: '0.5rem', borderRadius: '6px' }}>Sign in</button>
+          <button type="submit" disabled={loading} className="btn" style={{ width: '100%', padding: '0.85rem', fontSize: '1.05rem', fontWeight: 'bold', marginTop: '0.5rem', borderRadius: '6px', opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}>
+            {loading ? 'Authenticating...' : 'Sign in'}
+          </button>
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', margin: '2rem 0', color: '#94a3b8' }}>

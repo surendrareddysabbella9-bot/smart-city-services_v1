@@ -24,7 +24,7 @@ function WorkerListing() {
   return (
     <div className="container">
       <div style={{ marginBottom: '1.5rem', fontSize: '0.85rem', color: 'var(--text-light)' }}>
-         <span style={{ cursor: 'pointer' }} onClick={() => window.history.back()}>Dashboard Workspace</span> <span style={{ margin: '0 0.5rem' }}>/</span> <strong style={{ color: 'var(--primary)' }}>Discover Professionals</strong>
+         <span style={{ cursor: 'pointer' }} onClick={() => window.history.back()}>{user ? 'Dashboard Workspace' : 'Global Directory'}</span> <span style={{ margin: '0 0.5rem' }}>/</span> <strong style={{ color: 'var(--primary)' }}>Discover Professionals</strong>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="dashboard-title" style={{ margin: 0 }}>Discover Professionals</h1>

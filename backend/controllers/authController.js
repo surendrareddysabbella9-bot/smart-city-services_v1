@@ -97,19 +97,22 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   const { name, phone, location, experience } = req.body;
+  const client = await pool.connect();
   try {
-    await pool.query('BEGIN');
-    await pool.query('UPDATE Users SET name = $1, phone = $2 WHERE id = $3', [name, phone, req.user.id]);
+    await client.query('BEGIN');
+    await client.query('UPDATE Users SET name = $1, phone = $2 WHERE id = $3', [name, phone, req.user.id]);
     
     if (req.user.role === 'Worker') {
-      await pool.query('UPDATE Workers SET location = $1, experience = $2 WHERE user_id = $3', [location, experience, req.user.id]);
+      await client.query('UPDATE Workers SET location = $1, experience = $2 WHERE user_id = $3', [location, experience, req.user.id]);
     } else if (req.user.role === 'Customer') {
-      await pool.query('UPDATE Customers SET location = $1 WHERE user_id = $2', [location, req.user.id]);
+      await client.query('UPDATE Customers SET location = $1 WHERE user_id = $2', [location, req.user.id]);
     }
-    await pool.query('COMMIT');
+    await client.query('COMMIT');
     res.json({ message: 'Profile updated' });
   } catch (err) {
-    await pool.query('ROLLBACK');
+    await client.query('ROLLBACK');
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 };
