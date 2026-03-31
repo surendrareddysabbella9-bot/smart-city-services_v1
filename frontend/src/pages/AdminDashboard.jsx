@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
+import { FaTrash, FaSearch } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 function AdminDashboard() {
   const [pendingWorkers, setPendingWorkers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState('');
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     fetchData();
@@ -28,9 +32,30 @@ function AdminDashboard() {
       await api.put('/admin/verify-worker', { worker_id: workerId, status });
       fetchData();
     } catch (err) {
-      alert('Failed to verify worker');
+      toast.error('Failed to verify worker');
     }
   };
+
+  const handleDeleteUser = async (targetUser) => {
+    if (targetUser.id === currentUser.id) {
+      toast.error('Security Constraint: You cannot permanently delete your own active administrator account.');
+      return;
+    }
+    const confirmPurge = window.confirm(`Are you sure you want to delete ${targetUser.name}? This will also terminate all their active encrypted contracts. This action cannot be undone.`);
+    if (!confirmPurge) return;
+    try {
+      await api.delete(`/admin/users/${targetUser.id}`);
+      toast.success(`User ${targetUser.email} successfully purged from City Intelligence.`);
+      fetchData();
+    } catch (err) {
+      toast.error('Termination failure context returned natively.');
+    }
+  };
+
+  const filteredUsers = users.filter(u => 
+    u.email.toLowerCase().includes(search.toLowerCase()) || 
+    u.role.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="container">
@@ -68,24 +93,47 @@ function AdminDashboard() {
       </div>
 
       <div>
-        <h2>All Users</h2>
-        <div style={{ marginTop: '1.5rem', overflowX: 'auto' }}>
-          <table>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ margin: 0 }}>All Users</h2>
+          <div style={{ position: 'relative', minWidth: '300px' }}>
+            <FaSearch style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+            <input 
+              type="text" 
+              placeholder="Search by Email or Role..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ width: '100%', padding: '0.65rem 1rem 0.65rem 2.8rem', border: '1px solid var(--border)', borderRadius: '6px' }}
+            />
+          </div>
+        </div>
+        <div style={{ overflowX: 'auto', background: 'white', borderRadius: '8px', border: '1px solid var(--border)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Joined</th>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
+                <th style={{ padding: '1rem' }}>Name</th>
+                <th style={{ padding: '1rem' }}>Email</th>
+                <th style={{ padding: '1rem' }}>Role</th>
+                <th style={{ padding: '1rem' }}>Joined</th>
+                <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>{u.name}</td>
-                  <td>{u.email}</td>
-                  <td>{u.role}</td>
-                  <td>{new Date(u.created_at).toLocaleDateString()}</td>
+              {filteredUsers.map(u => (
+                <tr key={u.id} style={{ borderBottom: '1px solid var(--border)', animation: 'fadeIn 0.3s ease-out' }}>
+                  <td style={{ padding: '1rem' }}><strong>{u.name}</strong></td>
+                  <td style={{ padding: '1rem', color: 'var(--text-light)' }}>{u.email}</td>
+                  <td style={{ padding: '1rem' }}><span className={`badge ${u.role.toLowerCase()}`}>{u.role}</span></td>
+                  <td style={{ padding: '1rem', fontSize: '0.9rem' }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                  <td style={{ padding: '1rem', textAlign: 'right' }}>
+                    <button 
+                      onClick={() => handleDeleteUser(u)} 
+                      className="btn btn-danger" 
+                      style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', opacity: u.id === currentUser.id ? 0.3 : 1, cursor: u.id === currentUser.id ? 'not-allowed' : 'pointer' }}
+                      disabled={u.id === currentUser.id}
+                    >
+                      <FaTrash /> Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

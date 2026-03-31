@@ -7,6 +7,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 function ProfileEditor({ userRole }) {
   const [formData, setFormData] = useState({ name: '', phone: '', location: '', experience: '' });
   const [showPhone, setShowPhone] = useState(false);
+  const [notifyNegative, setNotifyNegative] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -98,6 +99,18 @@ function ProfileEditor({ userRole }) {
             </div>
           )}
         </div>
+
+        {userRole === 'Admin' && (
+          <div style={{ marginTop: '1rem', padding: '1.25rem', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+              <input type="checkbox" checked={notifyNegative} onChange={() => setNotifyNegative(!notifyNegative)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+              <div>
+                <strong style={{ display: 'block', color: '#991b1b', fontSize: '0.95rem' }}>Automated Alert System: Negative Trust Flags</strong>
+                <span style={{ color: '#b91c1c', fontSize: '0.85rem' }}>Send immediate system notifications when a rating parses below 3.0</span>
+              </div>
+            </label>
+          </div>
+        )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
           <button type="button" onClick={handleCancel} className="btn btn-ghost" style={{ padding: '0.75rem 1.5rem', borderRadius: '6px' }}>Cancel</button>

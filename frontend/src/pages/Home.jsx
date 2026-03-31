@@ -5,6 +5,7 @@ import { FaSearch, FaShieldAlt, FaBriefcase, FaUserCheck, FaMapMarkerAlt, FaStar
 function Home() {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -32,34 +33,58 @@ function Home() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#f8fafc' }}>
       
       {/* Hero Section */}
-      <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #4338ca)', color: 'white', padding: '6rem 2rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1.5rem', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
-          Professional Help, On Demand
-        </h1>
-        <p style={{ fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 2.5rem', color: '#e0e7ff', lineHeight: '1.6' }}>
-          Connect securely with top-rated local experts for all your home, office, and municipal maintenance needs.
-        </p>
-        
-        <form onSubmit={handleSearch} style={{ display: 'flex', maxWidth: '600px', margin: '0 auto', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', background: 'white', paddingLeft: '1.5rem', flex: 1 }}>
-            <FaSearch color="#64748b" size={20} />
-            <input 
-              type="text" 
-              placeholder="What service do you need? (e.g., Plumber)" 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: '100%', padding: '1.25rem', border: 'none', fontSize: '1.1rem', outline: 'none', color: '#1e293b' }}
-            />
+      <div style={{ background: user?.role === 'Admin' ? 'linear-gradient(135deg, #0f172a, #334155)' : 'linear-gradient(135deg, #1e3a8a, #4338ca)', color: 'white', padding: '6rem 2rem', textAlign: 'center' }}>
+        {user?.role === 'Admin' ? (
+          <div style={{ maxWidth: '900px', margin: '0 auto', animation: 'fadeIn 0.5s ease-out' }}>
+            <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1.5rem', color: '#f8fafc' }}>System Health Override</h1>
+            <p style={{ fontSize: '1.2rem', color: '#cbd5e1', marginBottom: '3rem' }}>Administrative telemetry and active negative review intercepts.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+               <div style={{ background: 'rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
+                 <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', color: '#10b981' }}>248</h2>
+                 <span style={{ fontSize: '0.95rem', fontWeight: 'bold', textTransform: 'uppercase', tracking: '0.05em' }}>Total Active Contracts</span>
+               </div>
+               <div style={{ background: 'rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
+                 <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', color: '#3b82f6' }}>12</h2>
+                 <span style={{ fontSize: '0.95rem', fontWeight: 'bold', textTransform: 'uppercase', tracking: '0.05em' }}>New Signups Today</span>
+               </div>
+               <div style={{ background: 'rgba(239,68,68,0.2)', padding: '2rem', borderRadius: '12px', border: '1px solid rgba(239,68,68,0.5)', cursor: 'pointer' }} onClick={() => navigate('/dashboard/admin')}>
+                 <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', color: '#fca5a5' }}>3</h2>
+                 <span style={{ fontSize: '0.95rem', fontWeight: 'bold', textTransform: 'uppercase', tracking: '0.05em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>Flagged Reviews <span style={{ background: '#ef4444', color: 'white', padding: '0.1rem 0.5rem', borderRadius: '12px', fontSize: '0.75rem' }}>Action Req</span></span>
+               </div>
+            </div>
           </div>
-          <button type="submit" style={{ background: '#10b981', color: 'white', border: 'none', padding: '0 2rem', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', transition: 'background 0.2s' }}>
-            Find Expert
-          </button>
-        </form>
+        ) : (
+          <>
+            <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1.5rem', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+              Professional Help, On Demand
+            </h1>
+            <p style={{ fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 2.5rem', color: '#e0e7ff', lineHeight: '1.6' }}>
+              Connect securely with top-rated local experts for all your home, office, and municipal maintenance needs.
+            </p>
+            
+            <form onSubmit={handleSearch} style={{ display: 'flex', maxWidth: '600px', margin: '0 auto', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: 'white', paddingLeft: '1.5rem', flex: 1 }}>
+                <FaSearch color="#64748b" size={20} />
+                <input 
+                  type="text" 
+                  placeholder="What service do you need? (e.g., Plumber)" 
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  style={{ width: '100%', padding: '1.25rem', border: 'none', fontSize: '1.1rem', outline: 'none', color: '#1e293b' }}
+                />
+              </div>
+              <button type="submit" style={{ background: '#10b981', color: 'white', border: 'none', padding: '0 2rem', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', transition: 'background 0.2s' }}>
+                Find Expert
+              </button>
+            </form>
 
-        {!localStorage.getItem('user') && (
-          <div style={{ marginTop: '2.5rem', fontSize: '1rem', color: '#c7d2fe' }}>
-            Are you a professional looking for work? <Link to="/register" style={{ color: 'white', fontWeight: 'bold', textDecoration: 'underline' }}>Join our network</Link>
-          </div>
+            {!user && (
+              <div style={{ marginTop: '2.5rem', fontSize: '1rem', color: '#c7d2fe' }}>
+                Are you a professional looking for work? <Link to="/register" style={{ color: 'white', fontWeight: 'bold', textDecoration: 'underline' }}>Join our network</Link>
+              </div>
+            )}
+          </>
         )}
       </div>
 
