@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import api from '../services/api';
 
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function ProfileEditor({ userRole }) {
   const [formData, setFormData] = useState({ name: '', phone: '', location: '', experience: '' });
-  const [success, setSuccess] = useState('');
   const [showPhone, setShowPhone] = useState(false);
 
   useEffect(() => {
@@ -26,9 +26,11 @@ function ProfileEditor({ userRole }) {
     e.preventDefault();
     try {
       await api.put('/auth/profile', formData);
-      setSuccess('Your profile has been saved successfully.');
-      setTimeout(() => setSuccess(''), 4000);
-    } catch(err) { console.error(err); }
+      toast.success('Your profile has been saved successfully.', { position: "bottom-right", autoClose: 3000 });
+    } catch(err) { 
+      toast.error('Failed to save profile. Please verify your connection.');
+      console.error(err); 
+    }
   };
 
   const handleCancel = () => {
@@ -48,7 +50,6 @@ function ProfileEditor({ userRole }) {
   return (
     <div className="card" style={{ marginBottom: '2rem', width: '100%', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
       <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>Personal Information</h3>
-      {success && <div style={{ background: '#dcfce7', color: '#166534', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #bbf7d0', fontWeight: '500' }}>{success}</div>}
       
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>

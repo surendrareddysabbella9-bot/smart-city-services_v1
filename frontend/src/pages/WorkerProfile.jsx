@@ -78,7 +78,14 @@ function WorkerProfile() {
         )}
 
         <div style={{ marginTop: '3.5rem', textAlign: 'center' }}>
-           <Link to={`/book/${worker.id}`} className="btn" style={{ padding: '1.25rem 3rem', fontSize: '1.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', borderRadius: '8px', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)' }}><FaCalendarAlt /> Book this Worker</Link>
+           {user ? (
+             <Link to={`/book/${worker.id}`} className="btn" style={{ padding: '1.25rem 3rem', fontSize: '1.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', borderRadius: '8px', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)' }}><FaCalendarAlt /> Book this Worker</Link>
+           ) : (
+             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+               <Link to="/login" className="btn btn-secondary" style={{ padding: '1.25rem 3rem', fontSize: '1.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', borderRadius: '8px', background: '#f1f5f9', color: '#475569', border: '2px solid #cbd5e1' }}><FaLock /> Login to Book</Link>
+               <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Secure your appointment by verifying your identity first.</p>
+             </div>
+           )}
         </div>
       </div>
     </div>

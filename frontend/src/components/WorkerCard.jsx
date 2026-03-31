@@ -38,7 +38,7 @@ function WorkerCard({ worker }) {
         </div>
       </div>
 
-      <Link to={`/book/${worker.id}`} className="btn" style={{ textAlign: 'center', width: '100%', borderRadius: '6px', fontWeight: 'bold' }}>View Profile</Link>
+      <Link to={`/worker/${worker.id}`} className="btn btn-outline" style={{ textAlign: 'center', width: '100%', borderRadius: '6px', fontWeight: 'bold', border: '2px solid var(--primary)', color: 'var(--primary)' }}>View Profile</Link>
     </div>
   );
 }
