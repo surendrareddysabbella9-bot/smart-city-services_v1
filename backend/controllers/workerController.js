@@ -1,9 +1,75 @@
+import pool from '../database.js';
+
+export const getWorkers = async (req, res, next) => {
+  const { category } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const offset = (page - 1) * limit;
+
+  try {
+    let query = `
+      SELECT w.id, u.name, w.category, w.experience, w.location, w.verification_status,
+             w.trust_score, w.total_jobs, w.completion_rate
       FROM Workers w 
       JOIN Users u ON w.user_id = u.id 
-      WHERE w.id = $1
+      WHERE w.verification_status = 'Verified' AND w.is_deleted = false
+    `;
+    let countQuery = `
+      SELECT COUNT(*) 
+      FROM Workers w 
+      JOIN Users u ON w.user_id = u.id 
+      WHERE w.verification_status = 'Verified' AND w.is_deleted = false
+    `;
+    const params = [];
+
+    if (category) {
+      query += ' AND w.category = $1';
+      countQuery += ' AND w.category = $1';
+      params.push(category);
+    }
+    
+    query += ` ORDER BY w.trust_score DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+
+    const countRes = await pool.query(countQuery, params);
+    const workersResult = await pool.query(query, [...params, limit, offset]);
+    const workers = workersResult.rows;
+    const total = parseInt(countRes.rows[0].count);
+
+    for (let worker of workers) {
+      const ratingsResult = await pool.query(`
+        SELECT AVG(r.rating) as avgRating 
+        FROM Ratings r 
+        JOIN Bookings b ON r.booking_id = b.id 
+        WHERE b.worker_id = $1
+      `, [worker.id]);
+      const ratings = ratingsResult.rows;
+      worker.averageRating = ratings[0]?.avgrating ? parseFloat(ratings[0].avgrating).toFixed(1) : 0;
+      
+      const avgRatingNum = parseFloat(worker.averageRating) || 0;
+      const trustScoreNum = parseFloat(worker.trust_score) || 0;
+      const expNum = parseInt(worker.experience) || 0;
+      worker.matchScore = ((avgRatingNum * 10) + (trustScoreNum * 0.4) + (expNum * 1.5)).toFixed(2);
+    }
+    
+    // Sort intelligently by MatchScore desc
+    workers.sort((a, b) => parseFloat(b.matchScore) - parseFloat(a.matchScore));
+
+    res.json({ success: true, data: { workers, total, page, pages: Math.ceil(total / limit) }, error: null });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getWorkerById = async (req, res, next) => {
+  try {
+    const workersResult = await pool.query(`
+      SELECT w.id, u.name, w.category, w.experience, w.location, w.verification_status, u.phone, u.email 
+      FROM Workers w 
+      JOIN Users u ON w.user_id = u.id 
+      WHERE w.id = $1 AND w.is_deleted = false
     `, [req.params.id]);
 
-    if (workersResult.rows.length === 0) return res.status(404).json({ message: 'Worker not found' });
+    if (workersResult.rows.length === 0) return res.status(404).json({ success: false, data: null, error: 'Worker not found' });
     const worker = workersResult.rows[0];
 
     const ratingsResult = await pool.query(`
@@ -20,50 +86,50 @@
     const avg = ratings.reduce((sum, r) => sum + r.rating, 0) / (ratings.length || 1);
     worker.averageRating = avg ? avg.toFixed(1) : 0;
 
-    res.json(worker);
+    res.json({ success: true, data: worker, error: null });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const getWorkerHistory = async (req, res) => {
+export const getWorkerHistory = async (req, res, next) => {
   try {
     const historyRes = await pool.query(`
       SELECT j.*, u.name as customer_name 
       FROM job_history j
-      JOIN bookings b ON j.booking_id = b.id
-      JOIN customers c ON b.customer_id = c.id
-      JOIN users u ON c.user_id = u.id
-      WHERE j.worker_id = $1
+      JOIN Bookings b ON j.booking_id = b.id
+      JOIN Customers c ON b.customer_id = c.id
+      JOIN Users u ON c.user_id = u.id
+      WHERE j.worker_id = $1 AND j.is_deleted = false
       ORDER BY j.completed_date DESC
     `, [req.params.id]);
-    res.json(historyRes.rows);
+    res.json({ success: true, data: historyRes.rows, error: null });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const getWorkerCertifications = async (req, res) => {
+export const getWorkerCertifications = async (req, res, next) => {
   try {
     const certsRes = await pool.query(`
       SELECT * FROM worker_certifications 
       WHERE worker_id = $1
     `, [req.params.id]);
-    res.json(certsRes.rows);
+    res.json({ success: true, data: certsRes.rows, error: null });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const addCertification = async (req, res) => {
+export const addCertification = async (req, res, next) => {
   const { worker_id, certification_name } = req.body;
   try {
     const result = await pool.query(`
       INSERT INTO worker_certifications (worker_id, certification_name) 
       VALUES ($1, $2) RETURNING id
     `, [worker_id, certification_name]);
-    res.status(201).json({ message: 'Certification requested', id: result.rows[0].id });
+    res.status(201).json({ success: true, data: { id: result.rows[0].id }, message: 'Certification requested' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
