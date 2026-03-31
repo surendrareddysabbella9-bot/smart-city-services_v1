@@ -19,6 +19,7 @@ import CommunitySubscriptionsPage from './pages/CommunitySubscriptionsPage';
 import ProfilePage from './pages/ProfilePage';
 import DashboardLayout from './components/DashboardLayout';
 import WorkerProfile from './pages/WorkerProfile';
+import ForgotPassword from './pages/ForgotPassword';
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ function App() {
           <Route path="/" element={<OptionalDashboardLayout><Home /></OptionalDashboardLayout>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/workers" element={<OptionalDashboardLayout><WorkerListing /></OptionalDashboardLayout>} />
           <Route path="/book/:workerId" element={<PrivateRoute><DashboardLayout><Booking /></DashboardLayout></PrivateRoute>} />
           <Route path="/worker/:id" element={<OptionalDashboardLayout><WorkerProfile /></OptionalDashboardLayout>} />
