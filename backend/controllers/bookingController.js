@@ -142,7 +142,10 @@ export const updateBookingStatus = async (req, res) => {
 
     await client.query('BEGIN');
 
-    await client.query('UPDATE Bookings SET status = $1 WHERE id = $2', [status, id]);
+    const updateQuery = status === 'Completed' 
+      ? 'UPDATE Bookings SET status = $1, end_time = NOW() WHERE id = $2' 
+      : 'UPDATE Bookings SET status = $1 WHERE id = $2';
+    await client.query(updateQuery, [status, id]);
 
     if (status === 'Completed') {
       const bookingRes = await client.query(`

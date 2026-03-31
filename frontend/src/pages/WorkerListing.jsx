@@ -82,6 +82,7 @@ function WorkerListing() {
           <FaFilter size={48} color="var(--border)" style={{ marginBottom: '1.5rem' }} />
           <h3>No workers found</h3>
           <p style={{ color: 'var(--text-light)' }}>Try adjusting your search filters to find more available professionals.</p>
+          {!user && <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#94a3b8' }}>Note: Professionals are undergoing strict identity verification. Verified profiles will appear here instantly.</p>}
         </div>
       )}
     </div>
