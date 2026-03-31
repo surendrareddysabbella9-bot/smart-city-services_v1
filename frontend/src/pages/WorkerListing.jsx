@@ -9,16 +9,34 @@ function WorkerListing() {
   const [filter, setFilter] = useState('');
   const [search, setSearch] = useState('');
   const [minRating, setMinRating] = useState('');
+  const [location, setLocation] = useState(null);
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   
+  React.useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+        }
+      );
+    }
+  }, []);
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['workers', filter, search],
+    queryKey: ['workers', filter, search, location],
     queryFn: async () => {
-      const url = `/workers?limit=50&page=1${filter ? `&category=${filter}` : ''}${search ? `&search=${search}` : ''}`;
+      const geoParams = location ? `&lat=${location.lat}&lng=${location.lng}` : '';
+      const url = `/workers?limit=50&page=1${filter ? `&category=${filter}` : ''}${search ? `&search=${search}` : ''}${geoParams}`;
       const res = await api.get(url);
       return res.data.data ? res.data.data.workers : res.data;
     },
-    refetchInterval: 10000, 
+    refetchInterval: 30000, 
     refetchOnWindowFocus: true
   });
 

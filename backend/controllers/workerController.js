@@ -1,15 +1,15 @@
 import pool from '../database.js';
 
 export const getWorkers = async (req, res, next) => {
-  const { category } = req.query;
+  const { category, lat, lng } = req.query;
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const limit = parseInt(req.query.limit) || 50;
   const offset = (page - 1) * limit;
 
   try {
     let query = `
       SELECT w.id, u.name, w.category, w.experience, w.location, w.verification_status,
-             w.trust_score, w.total_jobs, w.completion_rate
+             w.trust_score, w.total_jobs, w.completion_rate, w.latitude, w.longitude, w.user_id
       FROM Workers w 
       JOIN Users u ON w.user_id = u.id 
       WHERE w.verification_status IN ('Verified', 'Pending') AND w.is_deleted = false
@@ -39,6 +39,9 @@ export const getWorkers = async (req, res, next) => {
     const workers = workersResult.rows;
     const total = parseInt(countRes.rows[0].count);
 
+    const userLat = parseFloat(lat);
+    const userLng = parseFloat(lng);
+
     for (let worker of workers) {
       const ratingsResult = await pool.query(`
         SELECT AVG(r.rating) as avgRating 
@@ -52,11 +55,39 @@ export const getWorkers = async (req, res, next) => {
       const avgRatingNum = parseFloat(worker.averageRating) || 0;
       const trustScoreNum = parseFloat(worker.trust_score) || 0;
       const expNum = parseInt(worker.experience) || 0;
-      worker.matchScore = ((avgRatingNum * 10) + (trustScoreNum * 0.4) + (expNum * 1.5)).toFixed(2);
+      
+      // Calculate distance if coordinates are available
+      let distance = null;
+      let distanceBonus = 0;
+      if (userLat && userLng && worker.latitude && worker.longitude) {
+        const R = 6371; // Radius of earth in km
+        const dLat = (worker.latitude - userLat) * Math.PI / 180;
+        const dLon = (worker.longitude - userLng) * Math.PI / 180;
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(userLat * Math.PI / 180) * Math.cos(worker.latitude * Math.PI / 180) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2); 
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        distance = R * c;
+        
+        // Nearby bonus: increase matchscore for workers within 10km
+        if (distance < 5) distanceBonus = 50;
+        else if (distance < 15) distanceBonus = 25;
+      }
+      
+      worker.distance = distance;
+      worker.matchScore = ((avgRatingNum * 10) + (trustScoreNum * 0.4) + (expNum * 1.5) + distanceBonus).toFixed(2);
     }
     
-    // Sort intelligently by MatchScore desc
-    workers.sort((a, b) => parseFloat(b.matchScore) - parseFloat(a.matchScore));
+    // Sort intelligently: Nearest first if distance exists, then by MatchScore
+    workers.sort((a, b) => {
+      if (a.distance !== null && b.distance !== null) {
+        return a.distance - b.distance;
+      }
+      if (a.distance !== null) return -1;
+      if (b.distance !== null) return 1;
+      return parseFloat(b.matchScore) - parseFloat(a.matchScore);
+    });
 
     res.json({ success: true, data: { workers, total, page, pages: Math.ceil(total / limit) }, error: null });
   } catch (err) {

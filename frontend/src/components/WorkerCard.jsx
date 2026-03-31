@@ -33,8 +33,12 @@ function WorkerCard({ worker }) {
           <FaBriefcase color="#8b5cf6" size={16} /> Experience: <strong style={{ color: '#111827' }}>{worker.experience} yrs</strong>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#1f2937', fontSize: '0.95rem', fontWeight: '500' }}>
-          <FaMapMarkerAlt color="#ef4444" size={16} /> <span style={{ color: '#111827', fontWeight: '600' }}>{worker.location || 'Remote / Anywhere'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#1f2937', fontSize: '0.85rem', fontWeight: '500', background: '#f1f5f9', padding: '0.4rem 0.75rem', borderRadius: '8px', margin: '0.25rem 0' }}>
+          <FaMapMarkerAlt color="#ef4444" size={16} /> 
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ color: '#111827', fontWeight: '700' }}>{worker.location || 'Remote / Anywhere'}</span>
+            {worker.distance !== null && worker.distance !== undefined && <span style={{ color: 'var(--primary)', fontSize: '0.75rem', fontWeight: '900' }}>📍 {worker.distance.toFixed(1)} km away</span>}
+          </div>
         </div>
       </div>
 

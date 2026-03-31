@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import pool from '../database.js';
 
 export const register = async (req, res) => {
-  const { name, email, phone, password, role, category, experience, location } = req.body;
+  const { name, email, phone, password, role, category, experience, location, latitude, longitude } = req.body;
 
   try {
     const existingUsers = await pool.query('SELECT * FROM Users WHERE email = $1', [email]);
@@ -23,11 +23,11 @@ export const register = async (req, res) => {
 
       if (role === 'Worker') {
         await client.query(
-          'INSERT INTO Workers (user_id, category, experience, location, verification_status) VALUES ($1, $2, $3, $4, $5)',
-          [userId, category, experience, location, 'Pending']
+          'INSERT INTO Workers (user_id, category, experience, location, verification_status, latitude, longitude) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+          [userId, category, experience, location, 'Pending', latitude, longitude]
         );
       } else if (role === 'Customer') {
-        await client.query('INSERT INTO Customers (user_id, location) VALUES ($1, $2)', [userId, location || '']);
+        await client.query('INSERT INTO Customers (user_id, location, latitude, longitude) VALUES ($1, $2, $3, $4)', [userId, location || '', latitude, longitude]);
       }
 
       await client.query('COMMIT');
@@ -96,16 +96,16 @@ export const getProfile = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const { name, phone, location, experience } = req.body;
+  const { name, phone, location, experience, latitude, longitude } = req.body;
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     await client.query('UPDATE Users SET name = $1, phone = $2 WHERE id = $3', [name, phone, req.user.id]);
     
     if (req.user.role === 'Worker') {
-      await client.query('UPDATE Workers SET location = $1, experience = $2 WHERE user_id = $3', [location, experience, req.user.id]);
+      await client.query('UPDATE Workers SET location = $1, experience = $2, latitude = $3, longitude = $4 WHERE user_id = $5', [location, experience, latitude, longitude, req.user.id]);
     } else if (req.user.role === 'Customer') {
-      await client.query('UPDATE Customers SET location = $1 WHERE user_id = $2', [location, req.user.id]);
+      await client.query('UPDATE Customers SET location = $1, latitude = $2, longitude = $3 WHERE user_id = $4', [location, latitude, longitude, req.user.id]);
     }
     await client.query('COMMIT');
     res.json({ message: 'Profile updated' });
