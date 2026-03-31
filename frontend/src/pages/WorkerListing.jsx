@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { FaSearch, FaFilter } from 'react-icons/fa';
 import api from '../services/api';
 import WorkerCard from '../components/WorkerCard';
