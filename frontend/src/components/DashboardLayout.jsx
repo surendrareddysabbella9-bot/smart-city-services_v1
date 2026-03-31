@@ -23,7 +23,8 @@ function DashboardLayout({ children }) {
           )}
           {user?.role === 'Worker' && (
             <>
-              <Link to="/dashboard/worker" className={`nav-link ${(isActive('worker') && !isActive('performance')) ? 'active' : ''}`}><FaBriefcase /> Incoming Vector Directives</Link>
+              <Link to="/dashboard/worker" className={`nav-link ${(isActive('worker') && !isActive('performance')) ? 'active' : ''}`}><FaBriefcase /> Unified Logistics Dashboard</Link>
+              <Link to="/workers" className="nav-link"><FaUserCheck /> Global Resource Map</Link>
               <Link to="/dashboard/worker/performance" className={`nav-link ${isActive('performance') ? 'active' : ''}`}><FaChartBar /> Performance Diagnostics</Link>
             </>
           )}

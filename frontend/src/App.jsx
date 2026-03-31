@@ -40,7 +40,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/workers" element={<WorkerListing />} />
-          <Route path="/book/:workerId" element={<PrivateRoute role="Customer"><Booking /></PrivateRoute>} />
+          <Route path="/book/:workerId" element={<PrivateRoute><Booking /></PrivateRoute>} />
           <Route path="/worker/:id" element={<WorkerProfile />} />
           <Route path="/dashboard/customer" element={<PrivateRoute role="Customer"><DashboardLayout><CustomerDashboard /></DashboardLayout></PrivateRoute>} />
           <Route path="/dashboard/worker" element={<PrivateRoute role="Worker"><DashboardLayout><WorkerDashboard /></DashboardLayout></PrivateRoute>} />

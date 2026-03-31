@@ -4,8 +4,8 @@ import { authenticate, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', authenticate, authorize(['Customer']), createBooking);
-router.get('/customer', authenticate, authorize(['Customer']), getCustomerBookings);
+router.post('/', authenticate, createBooking);
+router.get('/customer', authenticate, getCustomerBookings);
 router.get('/worker', authenticate, authorize(['Worker']), getWorkerBookings);
 router.put('/:id/status', authenticate, updateBookingStatus);
 

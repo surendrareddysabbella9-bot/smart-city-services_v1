@@ -1,7 +1,7 @@
 import pool from '../database.js';
 
 export const createBooking = async (req, res) => {
-  const { customer_id, worker_id, service_id, description, start_time, end_time } = req.body;
+  const { worker_id, service_id, description, start_time, end_time } = req.body;
   const client = await pool.connect();
 
   try {
@@ -39,9 +39,18 @@ export const createBooking = async (req, res) => {
       return res.status(409).json({ success: false, error: 'Time slot overlaps directly intersecting existing locked logic block.' });
     }
 
+    let executing_customer_id;
+    const fallbackCheck = await client.query('SELECT id FROM Customers WHERE user_id = $1', [req.user.id]);
+    if (fallbackCheck.rows.length > 0) {
+        executing_customer_id = fallbackCheck.rows[0].id;
+    } else {
+        const newCustomerNode = await client.query('INSERT INTO Customers (user_id, location) VALUES ($1, $2) RETURNING id', [req.user.id, 'Dual-Role Operations']);
+        executing_customer_id = newCustomerNode.rows[0].id;
+    }
+
     const result = await client.query(
       'INSERT INTO Bookings (customer_id, worker_id, service_id, description, start_time, end_time, status, booking_date) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *',
-      [customer_id, worker_id, service_id || 1, description, start, end, 'Pending']
+      [executing_customer_id, worker_id, service_id || 1, description, start, end, 'Pending']
     );
 
     await client.query('COMMIT');
@@ -57,7 +66,7 @@ export const createBooking = async (req, res) => {
 export const getCustomerBookings = async (req, res) => {
   try {
     const customers = await pool.query('SELECT id FROM Customers WHERE user_id = $1', [req.user.id]);
-    if (customers.rows.length === 0) return res.status(404).json({ message: 'Customer not found' });
+    if (customers.rows.length === 0) return res.json([]);
     const customerId = customers.rows[0].id;
 
     const bookings = await pool.query(`
