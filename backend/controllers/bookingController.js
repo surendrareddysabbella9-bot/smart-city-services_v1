@@ -1,16 +1,56 @@
 import pool from '../database.js';
 
 export const createBooking = async (req, res) => {
-  const { customer_id, worker_id, service_id, description, booking_date } = req.body;
+  const { customer_id, worker_id, service_id, description, start_time, end_time } = req.body;
+  const client = await pool.connect();
 
   try {
-    const result = await pool.query(
-      'INSERT INTO Bookings (customer_id, worker_id, service_id, description, booking_date, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [customer_id, worker_id, service_id || 1, description, booking_date, 'Pending']
+    await client.query('BEGIN');
+
+    const start = new Date(start_time);
+    const end = new Date(end_time);
+    if (start < new Date()) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ success: false, error: 'Booking cannot be placed strictly in the past.' });
+    }
+    if (end <= start) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ success: false, error: 'End time boundary must exceed start time interval.' });
+    }
+
+    // Isolate targeting row-level bounds via "FOR UPDATE" explicit execution
+    const workerCheck = await client.query('SELECT id FROM Workers WHERE id = $1 FOR UPDATE', [worker_id]);
+    if (workerCheck.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ success: false, error: 'Target Worker context absent block failed.' });
+    }
+
+    // Mathematical Conflict Resolution
+    const conflictCheck = await client.query(`
+      SELECT 1 FROM Bookings
+      WHERE worker_id = $1 
+      AND status IN ('Pending', 'Accepted') 
+      AND is_deleted = false
+      AND (start_time < $3 AND end_time > $2)
+    `, [worker_id, start, end]);
+
+    if (conflictCheck.rows.length > 0) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ success: false, error: 'Time slot overlaps directly intersecting existing locked logic block.' });
+    }
+
+    const result = await client.query(
+      'INSERT INTO Bookings (customer_id, worker_id, service_id, description, start_time, end_time, status, booking_date) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *',
+      [customer_id, worker_id, service_id || 1, description, start, end, 'Pending']
     );
-    res.status(201).json({ message: 'Booking created successfully', bookingId: result.rows[0]?.id });
+
+    await client.query('COMMIT');
+    res.status(201).json({ success: true, data: result.rows[0], message: 'Booking isolated successfully' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    await client.query('ROLLBACK');
+    res.status(500).json({ success: false, error: err.message });
+  } finally {
+    client.release();
   }
 };
 
