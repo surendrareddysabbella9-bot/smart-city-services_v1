@@ -9,6 +9,7 @@ function CustomerDashboard() {
   const queryClient = useQueryClient();
 
   // Extract from unified backend standard response!
+  const [isProcessing, setIsProcessing] = React.useState(false);
   const { data = [], isLoading } = useQuery({
     queryKey: ['customerBookings'],
     queryFn: () => api.get('/bookings/customer').then(res => res.data.data ? res.data.data : res.data),
@@ -19,101 +20,117 @@ function CustomerDashboard() {
   const pastBookings = data.filter(b => b.status === 'Completed' || b.status === 'Cancelled');
 
   const handleUpdateStatus = async (id, status) => {
+    if (status === 'Cancelled' && !window.confirm('Are you certain you wish to abort this service connection? This action is irreversible.')) return;
+    
+    setIsProcessing(true);
     try {
       await api.put(`/bookings/${id}/status`, { status });
       queryClient.invalidateQueries(['customerBookings']);
-      toast.success(`Booking dynamically resolved implicitly to ${status}`);
+      toast.success(`Service status successfully transitioned to ${status}`);
     } catch (err) {
-      toast.error('Failed to change booking securely.');
+      toast.error('The connection handshake failed to update securely.');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const [ratedJobs, setRatedJobs] = React.useState(JSON.parse(localStorage.getItem('ratedBookings') || '[]'));
+  const handleRating = async (bookingId, workerId, workerName) => {
+    const rating = prompt(`Rate your experience with ${workerName} (1-5 Stars):`);
+    if (!rating) return;
+    
+    const ratingNum = parseInt(rating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      toast.warn('Please provide a valid numeric rating between 1 and 5.');
+      return;
+    }
 
-  const handleRating = async (bookingId, workerId) => {
-    const r = prompt('Rate this Worker (1-5 Stars):');
-    const rr = prompt('Optional diagnostic feedback debriefing:');
-    if (r) {
-      try {
-        await api.post('/ratings', { booking_id: bookingId, worker_id: workerId, rating: r, review: rr });
-        toast.success('Thank you! Your rating has been successfully submitted and verified.');
-        const newRated = [...ratedJobs, bookingId];
-        setRatedJobs(newRated);
-        localStorage.setItem('ratedBookings', JSON.stringify(newRated));
-        queryClient.invalidateQueries(['customerBookings']);
-      } catch(err) { 
-        if(err.response?.status === 400 && err.response?.data?.message?.includes('already exists')) {
-           toast.info('Historical log: This job has already been rated securely.');
-           const newRated = [...ratedJobs, bookingId];
-           setRatedJobs(newRated);
-           localStorage.setItem('ratedBookings', JSON.stringify(newRated));
-        } else {
-           toast.error(err.response?.data?.message || err.response?.data?.error || 'Ratings failed security bounds constraint'); 
-        }
-      }
+    const review = prompt('Optional diagnostic feedback (Internal Use Only):');
+    
+    setIsProcessing(true);
+    try {
+      await api.post('/ratings', { booking_id: bookingId, worker_id: workerId, rating: ratingNum, review });
+      toast.success('Professional ledger updated. Your rating has been verified and applied.');
+      queryClient.invalidateQueries(['customerBookings']);
+    } catch(err) { 
+      toast.error(err.response?.data?.message || 'The rating verification protocol failed.'); 
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return (
-    <div className="container">
-      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-        <h1 className="dashboard-title" style={{ margin: 0 }}>Customer Logistics Terminal</h1>
-        <Link to="/dashboard/customer/subscriptions" className="btn">Facility Agreements Map</Link>
+    <div className="container" style={{ padding: '2rem' }}>
+      <div className="dashboard-header" style={{ marginBottom: '3rem' }}>
+        <h1 className="dashboard-title" style={{ fontSize: '2.5rem', fontWeight: '900' }}>Logistics Dashboard</h1>
+        <p style={{ color: 'var(--text-light)', marginTop: '0.5rem' }}>Management terminal for your active and historical urban service connections.</p>
       </div>
       
       {isLoading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', fontSize: '1.25rem' }}>Processing localized history array...</div>
+        <div style={{ textAlign: 'center', padding: '5rem', fontSize: '1.25rem', color: 'var(--text-light)' }}>Synchronizing service history...</div>
       ) : (
-        <div className="grid">
-          <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)' }}>
-            <h3 style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px dashed var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0 }}><FaCalendarAlt color="var(--primary)"/> Active Encrypted Contracts</h3>
+        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2.5rem' }}>
+          <section className="card" style={{ padding: '0', background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+            <h3 style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0, borderRadius: '16px 16px 0 0' }}><FaCalendarAlt color="var(--primary)"/> Active Service Connections</h3>
             <div style={{ padding: '1.5rem' }}>
               {activeBookings.length > 0 ? (
-                <ul style={{ listStyle: 'none', padding: 0 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {activeBookings.map(b => (
-                    <li key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'white' }}>
+                    <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem', border: '1px solid #f1f5f9', borderRadius: '12px', background: '#ffffff', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                       <div>
-                        <strong style={{ display: 'block', fontSize: '1.1rem', marginBottom: '0.25rem' }}>{b.worker_name} <span style={{ color: 'var(--text-light)', fontWeight: 'normal', fontSize: '0.9rem' }}>({b.category})</span></strong>
-                        <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-light)', fontSize: '0.9rem' }}>{b.description}</p>
-                        <p style={{ margin: 0, fontSize: '0.85rem' }}>Booking Date: {new Date(b.start_time).toLocaleString()}</p>
+                        <strong style={{ display: 'block', fontSize: '1.15rem', color: '#1e293b' }}>{b.worker_name}</strong>
+                        <p style={{ margin: '0.25rem 0 0.5rem 0', color: '#64748b', fontSize: '0.95rem', fontWeight: '500' }}>{b.category} • {b.description}</p>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>Scheduled: {new Date(b.start_time).toLocaleString()}</p>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <span className={`badge ${b.status.toLowerCase()}`}>{b.status}</span>
-                        {b.status === 'Pending' && <button onClick={() => handleUpdateStatus(b.id, 'Cancelled')} className="btn btn-danger" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><FaTimesCircle /> Abort Connection</button>}
-                        {b.status === 'Accepted' && <button onClick={() => handleUpdateStatus(b.id, 'Completed')} className="btn" style={{ background: '#10b981', padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><FaCheckCircle /> Authorize Conclusion</button>}
+                        <span className={`badge ${b.status.toLowerCase()}`} style={{ padding: '0.5rem 1rem', fontSize: '0.75rem' }}>{b.status}</span>
+                        {b.status === 'Pending' && (
+                           <button disabled={isProcessing} onClick={() => handleUpdateStatus(b.id, 'Cancelled')} className="btn btn-outline" style={{ border: '2px solid #ef4444', color: '#ef4444', padding: '0.5rem 1.25rem', fontWeight: '800' }}>Abort Connection</button>
+                        )}
+                        {b.status === 'Accepted' && (
+                           <button disabled={isProcessing} onClick={() => handleUpdateStatus(b.id, 'Completed')} className="btn" style={{ background: '#10b981', color: 'white', padding: '0.5rem 1.25rem', fontWeight: '800' }}>Verify Completion</button>
+                        )}
                       </div>
-                    </li>
+                    </div>
                   ))}
-                </ul>
-              ) : <p style={{ color: 'var(--text-light)' }}>You have no active bookings in your workspace.</p>}
+                </div>
+              ) : <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: '2rem' }}>No active connections in your current terminal.</p>}
             </div>
-          </div>
+          </section>
 
-          <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)' }}>
-             <h3 style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px dashed var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0 }}><FaHistory color="var(--primary)"/> Past Service History</h3>
+          <section className="card" style={{ padding: '0', background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+             <h3 style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0, borderRadius: '16px 16px 0 0' }}><FaHistory color="#6366f1"/> Service Connection History</h3>
              <div style={{ padding: '1.5rem' }}>
                {pastBookings.length > 0 ? (
-                 <ul style={{ listStyle: 'none', padding: 0 }}>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                    {pastBookings.map(b => (
-                     <li key={b.id} style={{ padding: '1.25rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'white' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                          <strong style={{ fontSize: '1.1rem' }}>{b.worker_name}</strong>
+                     <div key={b.id} style={{ padding: '1.5rem', border: '1px solid #f1f5f9', borderRadius: '12px', background: b.status === 'Cancelled' ? '#f8fafc' : 'white' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                          <strong style={{ fontSize: '1.1rem', color: '#1e293b' }}>{b.worker_name}</strong>
                           <span className={`badge ${b.status.toLowerCase()}`}>{b.status}</span>
                         </div>
-                        <p style={{ margin: '0 0 1rem 0', color: 'var(--text-light)', fontSize: '0.9rem' }}>Completed On: {b.end_time ? new Date(b.end_time).toLocaleDateString() : (b.updated_at ? new Date(b.updated_at).toLocaleDateString() : new Date().toLocaleDateString())}</p>
+                        <p style={{ margin: '0 0 1rem 0', color: '#64748b', fontSize: '0.9rem' }}>
+                          {b.status === 'Completed' 
+                            ? `Archived: ${b.end_time ? new Date(b.end_time).toLocaleDateString() : 'N/A'}`
+                            : 'Connection Terminated Historiographically'
+                          }
+                        </p>
                         {b.status === 'Completed' && (
-                          ratedJobs.includes(b.id) ? (
-                             <div style={{ textAlign: 'center', color: '#10b981', fontWeight: 'bold', padding: '0.75rem', background: '#ecfdf5', borderRadius: '6px', border: '1px solid #a7f3d0' }}><FaCheckCircle /> Rating Successfully Submitted</div>
+                          b.rating_submitted ? (
+                             <div style={{ textAlign: 'center', color: '#059669', fontStyle: 'italic', fontWeight: '700', padding: '0.75rem', background: '#f0fdf4', borderRadius: '8px', fontSize: '0.9rem' }}><FaCheckCircle /> Performance Feedback Logged</div>
                           ) : (
-                             <button className="btn btn-secondary" onClick={() => handleRating(b.id, b.worker_id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}><FaStar color="#f59e0b" /> Rate this Worker</button>
+                             <button disabled={isProcessing} className="btn" onClick={() => handleRating(b.id, b.worker_id, b.worker_name)} style={{ width: '100%', background: '#6366f1', color: 'white', fontWeight: '800' }}>Rate Performance</button>
                           )
                         )}
-                     </li>
+                     </div>
                    ))}
-                  </ul>
-               ) : <p style={{ color: 'var(--text-light)' }}>You have no completed jobs on record.</p>}
+                  </div>
+               ) : <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: '2rem' }}>History ledger is currently unpopulated.</p>}
              </div>
-          </div>
+          </section>
+        </div>
+      )}
+    </div>
+  );
         </div>
       )}
     </div>

@@ -85,11 +85,14 @@ export const getCustomerBookings = async (req, res) => {
     const customerId = customers.rows[0].id;
 
     const bookings = await pool.query(`
-      SELECT b.*, w.category, u.name as worker_name 
+      SELECT b.*, w.category, u.name as worker_name, 
+             (r.id IS NOT NULL) as rating_submitted 
       FROM Bookings b 
       JOIN Workers w ON b.worker_id = w.id 
       JOIN Users u ON w.user_id = u.id 
+      LEFT JOIN Ratings r ON b.id = r.booking_id
       WHERE b.customer_id = $1
+      ORDER BY b.booking_date DESC
     `, [customerId]);
     res.json(bookings.rows);
   } catch (err) {

@@ -23,26 +23,28 @@ function WorkerListing() {
   });
 
   return (
-    <div className="container" style={{ padding: '2rem 3rem' }}>
-      <div style={{ marginBottom: '1.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: '500' }}>
-         <span style={{ cursor: 'pointer', hover: { color: 'var(--primary)' } }} onClick={() => window.history.back()}>{user ? 'Dashboard Workspace' : 'Marketplace Home'}</span> <span style={{ margin: '0 0.5rem', color: '#cbd5e1' }}>/</span> <strong style={{ color: 'var(--primary)' }}>Discover Global Professionals</strong>
+    <div className="container" style={{ padding: '3rem 4rem' }}>
+      <div style={{ marginBottom: '2rem', fontSize: '0.95rem', color: '#1e293b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+         <span style={{ cursor: 'pointer', borderBottom: '2px solid transparent' }} onClick={() => window.history.back()}>{user ? 'Dashboard Workspace' : 'Public Marketplace'}</span> <span style={{ margin: '0 0.5rem', color: '#cbd5e1' }}>/</span> <strong style={{ color: 'var(--primary)', borderBottom: '2px solid var(--primary)' }}>Discover Global Professionals</strong>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 className="dashboard-title" style={{ margin: 0 }}>Discover Professionals</h1>
+
+      <header style={{ marginBottom: '3.5rem', textAlign: 'left' }}>
+        <h1 className="dashboard-title" style={{ margin: 0, fontSize: '3rem', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.04em' }}>Discover Professionals</h1>
+        <p style={{ color: '#475569', marginTop: '0.75rem', fontSize: '1.2rem', fontWeight: '500', maxWidth: '700px', lineHeight: '1.6' }}>Access the inner sanctum of verified city service providers across all critical urban sectors.</p>
         
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', width: '100%', maxWidth: '1100px', background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
-          <div style={{ position: 'relative', flex: 3, minWidth: '300px' }}>
-            <FaSearch style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: 'white', padding: '1.25rem', borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.08)', marginTop: '2.5rem', flexWrap: 'nowrap', overflowX: 'auto' }}>
+          <div style={{ position: 'relative', flex: 3, minWidth: '350px' }}>
+            <FaSearch style={{ position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
             <input 
               type="text" 
-              placeholder="Search by professional name (e.g. Anil)..." 
+              placeholder="Search by name (e.g. Anil)..." 
               value={search} 
               onChange={(e) => setSearch(e.target.value)}
-              style={{ paddingLeft: '3.25rem', paddingRight: '1rem', height: '56px', width: '100%', border: '2px solid var(--border)', borderRadius: '12px', fontSize: '1rem', background: 'white', boxSizing: 'border-box' }}
+              style={{ paddingLeft: '3.75rem', paddingRight: '1rem', height: '52px', width: '100%', border: '2px solid #f1f5f9', borderRadius: '12px', fontSize: '1.05rem', background: '#f8fafc', fontWeight: '500', outline: 'none' }}
             />
           </div>
           
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ flex: 1, padding: '0 1rem', height: '56px', border: '2px solid var(--border)', borderRadius: '12px', minWidth: '180px', fontSize: '1rem', background: 'white', fontWeight: 'bold', color: 'var(--text)', cursor: 'pointer' }}>
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ flex: 1, padding: '0 1rem', height: '52px', border: '2px solid #f1f5f9', borderRadius: '12px', minWidth: '180px', fontSize: '1rem', background: '#f8fafc', fontWeight: '800', color: '#1e293b', cursor: 'pointer' }}>
             <option value="">All Categories</option>
             <option value="Electrician">Electrician</option>
             <option value="Plumber">Plumber</option>
@@ -50,25 +52,25 @@ function WorkerListing() {
             <option value="Maintenance Worker">Maintenance Worker</option>
           </select>
 
-          <select value={minRating} onChange={(e) => setMinRating(e.target.value)} style={{ flex: 1, padding: '0 1rem', height: '56px', border: '2px solid var(--border)', borderRadius: '12px', minWidth: '180px', fontSize: '1rem', background: 'white', fontWeight: 'bold', color: 'var(--text)', cursor: 'pointer' }}>
+          <select value={minRating} onChange={(e) => setMinRating(e.target.value)} style={{ flex: 1, padding: '0 1rem', height: '52px', border: '2px solid #f1f5f9', borderRadius: '12px', minWidth: '160px', fontSize: '1rem', background: '#f8fafc', fontWeight: '800', color: '#1e293b', cursor: 'pointer' }}>
             <option value="">Any Rating</option>
-            <option value="4.5">4.5+ Elite</option>
-            <option value="4.0">4.0+ Top</option>
-            <option value="3.0">3.0+ Good</option>
+            <option value="4.5">4.5+ Stars</option>
+            <option value="4.0">4.0+ Stars</option>
+            <option value="3.0">3.0+ Stars</option>
           </select>
 
-          <button className="btn" style={{ height: '56px', padding: '0 2.5rem', fontWeight: '800', borderRadius: '12px', fontSize: '1.1rem', minWidth: '160px', background: 'var(--primary)', color: 'white', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)' }}>Search</button>
+          <button className="btn" style={{ height: '52px', padding: '0 2.5rem', fontWeight: '900', borderRadius: '12px', fontSize: '1.1rem', minWidth: '160px', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Search</button>
 
           {(filter || search || minRating) && (
             <button 
               onClick={() => { setFilter(''); setSearch(''); setMinRating(''); }} 
-              style={{ background: 'transparent', border: 'none', color: '#dc2626', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.5rem' }}
+              style={{ background: 'transparent', border: 'none', color: '#dc2626', fontWeight: '900', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.5rem', textTransform: 'uppercase' }}
             >
               Reset
             </button>
           )}
         </div>
-      </div>
+      </header>
 
       {isLoading ? (
         <div className="grid">

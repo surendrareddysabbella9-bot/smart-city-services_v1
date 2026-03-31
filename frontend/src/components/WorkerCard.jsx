@@ -14,7 +14,7 @@ function WorkerCard({ worker }) {
           {worker.name}
           {worker.verification_status === 'Verified' && <FaUserCheck color="#10b981" title="Verified User" />}
         </h3>
-        <p className="card-subtitle" style={{ color: '#334155', fontSize: '0.95rem', fontWeight: '600', letterSpacing: '0.01em' }}>{worker.category}</p>
+        <p className="card-subtitle" style={{ color: '#1e293b', fontSize: '0.95rem', fontWeight: '700', letterSpacing: '0.01em' }}>{worker.category}</p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.5rem', flex: 1 }}>
@@ -29,16 +29,16 @@ function WorkerCard({ worker }) {
           <FaShieldAlt color="#3b82f6" size={16} /> Trust Score: <strong style={{ color: 'var(--primary)' }}>{Number(worker.trust_score).toFixed(0)}/100</strong>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--text)', fontSize: '0.95rem' }}>
-          <FaBriefcase color="#8b5cf6" size={16} /> Experience: <strong>{worker.experience} yrs</strong>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#1f2937', fontSize: '0.95rem', fontWeight: '500' }}>
+          <FaBriefcase color="#8b5cf6" size={16} /> Experience: <strong style={{ color: '#111827' }}>{worker.experience} yrs</strong>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#475569', fontSize: '0.95rem' }}>
-          <FaMapMarkerAlt color="#ef4444" size={16} /> {worker.location || 'Remote / Anywhere'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#1f2937', fontSize: '0.95rem', fontWeight: '500' }}>
+          <FaMapMarkerAlt color="#ef4444" size={16} /> <span style={{ color: '#111827', fontWeight: '600' }}>{worker.location || 'Remote / Anywhere'}</span>
         </div>
       </div>
 
-      <Link to={`/worker/${worker.id}`} className="btn btn-outline" style={{ textAlign: 'center', width: '100%', borderRadius: '6px', fontWeight: 'bold', border: '2px solid var(--primary)', color: 'var(--primary)' }}>View Profile</Link>
+      <Link to={`/worker/${worker.id}`} className="btn" style={{ textAlign: 'center', width: '100%', borderRadius: '8px', fontWeight: '900', padding: '0.85rem', color: 'white', background: 'var(--primary)', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)', fontSize: '1rem' }}>View Profile</Link>
     </div>
   );
 }

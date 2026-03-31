@@ -22,7 +22,7 @@ function Navbar() {
             </Link>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
                <strong style={{ fontSize: '0.90rem', color: 'var(--text)' }}>{user?.name?.split(' ')[0]}</strong>
-               <button onClick={handleLogout} style={{ padding: 0, width: 'auto', background: 'transparent', border: 'none', color: '#ef4444', fontSize: '0.70rem', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold' }}>Sign out</button>
+               <button onClick={handleLogout} style={{ padding: 0, width: 'auto', background: 'transparent', border: 'none', color: '#dc2626', fontSize: '0.75rem', cursor: 'pointer', textAlign: 'left', fontWeight: '900', textTransform: 'uppercase', marginTop: '0.1rem' }}>Terminate Session</button>
             </div>
           </div>
         ) : (

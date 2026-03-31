@@ -28,7 +28,11 @@ export const getWorkers = async (req, res, next) => {
       params.push(category);
     }
     
-    query += ` ORDER BY w.trust_score DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    query += ` ORDER BY 
+      CASE WHEN w.verification_status = 'Verified' THEN 1 ELSE 2 END ASC,
+      w.trust_score DESC,
+      w.total_jobs DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
 
     const countRes = await pool.query(countQuery, params);
     const workersResult = await pool.query(query, [...params, limit, offset]);
