@@ -22,42 +22,50 @@ function WorkerListing() {
   });
 
   return (
-    <div className="container">
-      <div style={{ marginBottom: '1.5rem', fontSize: '0.85rem', color: 'var(--text-light)' }}>
-         <span style={{ cursor: 'pointer' }} onClick={() => window.history.back()}>{user ? 'Dashboard Workspace' : 'Global Directory'}</span> <span style={{ margin: '0 0.5rem' }}>/</span> <strong style={{ color: 'var(--primary)' }}>Discover Professionals</strong>
+    <div className="container" style={{ padding: '2rem 3rem' }}>
+      <div style={{ marginBottom: '1.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: '500' }}>
+         <span style={{ cursor: 'pointer', hover: { color: 'var(--primary)' } }} onClick={() => window.history.back()}>{user ? 'Dashboard Workspace' : 'Marketplace Home'}</span> <span style={{ margin: '0 0.5rem', color: '#cbd5e1' }}>/</span> <strong style={{ color: 'var(--primary)' }}>Discover Global Professionals</strong>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="dashboard-title" style={{ margin: 0 }}>Discover Professionals</h1>
         
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flex: 1, minWidth: '300px', gap: '0.5rem' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
-              <FaSearch style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
-              <input 
-                type="text" 
-                placeholder="Search professionals..." 
-                value={search} 
-                onChange={(e) => setSearch(e.target.value)}
-                style={{ paddingLeft: '2.8rem', paddingRight: '1rem', height: '42px', width: '100%', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '0.95rem' }}
-              />
-            </div>
-            <button className="btn" style={{ height: '42px', padding: '0 1.5rem', fontWeight: 'bold' }}>Search</button>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', width: '100%', maxWidth: '1100px', background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)' }}>
+          <div style={{ position: 'relative', flex: 3, minWidth: '300px' }}>
+            <FaSearch style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <input 
+              type="text" 
+              placeholder="Search by professional name (e.g. Anil)..." 
+              value={search} 
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ paddingLeft: '3.25rem', paddingRight: '1rem', height: '56px', width: '100%', border: '2px solid var(--border)', borderRadius: '12px', fontSize: '1rem', background: 'white', boxSizing: 'border-box' }}
+            />
           </div>
           
-          <select value={minRating} onChange={(e) => setMinRating(e.target.value)} style={{ padding: '0 1rem', height: '42px', border: '1px solid var(--border)', borderRadius: '8px', minWidth: '140px', fontSize: '0.95rem', background: 'white' }}>
-            <option value="">Any Rating</option>
-            <option value="4.5">4.5+ Stars (Elite)</option>
-            <option value="4.0">4.0+ Stars (Top)</option>
-            <option value="3.0">3.0+ Stars (Good)</option>
-          </select>
-
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ padding: '0 1rem', height: '42px', border: '1px solid var(--border)', borderRadius: '8px', minWidth: '140px', fontSize: '0.95rem', background: 'white' }}>
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ flex: 1, padding: '0 1rem', height: '56px', border: '2px solid var(--border)', borderRadius: '12px', minWidth: '180px', fontSize: '1rem', background: 'white', fontWeight: 'bold', color: 'var(--text)', cursor: 'pointer' }}>
             <option value="">All Categories</option>
             <option value="Electrician">Electrician</option>
             <option value="Plumber">Plumber</option>
             <option value="Painter">Painter</option>
             <option value="Maintenance Worker">Maintenance Worker</option>
           </select>
+
+          <select value={minRating} onChange={(e) => setMinRating(e.target.value)} style={{ flex: 1, padding: '0 1rem', height: '56px', border: '2px solid var(--border)', borderRadius: '12px', minWidth: '180px', fontSize: '1rem', background: 'white', fontWeight: 'bold', color: 'var(--text)', cursor: 'pointer' }}>
+            <option value="">Any Rating</option>
+            <option value="4.5">4.5+ Elite</option>
+            <option value="4.0">4.0+ Top</option>
+            <option value="3.0">3.0+ Good</option>
+          </select>
+
+          <button className="btn" style={{ height: '56px', padding: '0 2.5rem', fontWeight: '800', borderRadius: '12px', fontSize: '1.1rem', minWidth: '160px', background: 'var(--primary)', color: 'white', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)' }}>Search</button>
+
+          {(filter || search || minRating) && (
+            <button 
+              onClick={() => { setFilter(''); setSearch(''); setMinRating(''); }} 
+              style={{ background: 'transparent', border: 'none', color: '#dc2626', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.5rem' }}
+            >
+              Reset
+            </button>
+          )}
         </div>
       </div>
 
@@ -78,11 +86,16 @@ function WorkerListing() {
           ))}
         </div>
       ) : (
-        <div style={{ padding: '4rem', textAlign: 'center', background: 'var(--surface)', borderRadius: '8px', border: '1px dashed var(--border)' }}>
-          <FaFilter size={48} color="var(--border)" style={{ marginBottom: '1.5rem' }} />
-          <h3>No workers found</h3>
-          <p style={{ color: 'var(--text-light)' }}>Try adjusting your search filters to find more available professionals.</p>
-          {!user && <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#94a3b8' }}>Note: Professionals are undergoing strict identity verification. Verified profiles will appear here instantly.</p>}
+        <div style={{ padding: '5rem 2rem', textAlign: 'center', background: 'white', borderRadius: '16px', border: '2px dashed #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+          <FaFilter size={64} color="#94a3b8" style={{ marginBottom: '1.5rem', opacity: 0.8 }} />
+          <h2 style={{ color: '#1e293b', marginBottom: '1rem' }}>No Professionals Detected in this Scope</h2>
+          <p style={{ color: '#475569', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>We're currently scaling our verified worker pool. Adjust your search criteria or register as a partner to be the first in your area.</p>
+          {!user && (
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+               <Link to="/register" className="btn" style={{ padding: '0.85rem 2rem' }}>Become a Verified Worker</Link>
+               <button onClick={() => { setFilter(''); setSearch(''); setMinRating(''); }} className="btn btn-outline" style={{ padding: '0.85rem 2rem' }}>View Global Directory</button>
+            </div>
+          )}
         </div>
       )}
     </div>

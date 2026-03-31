@@ -12,13 +12,13 @@ export const getWorkers = async (req, res, next) => {
              w.trust_score, w.total_jobs, w.completion_rate
       FROM Workers w 
       JOIN Users u ON w.user_id = u.id 
-      WHERE w.verification_status = 'Verified' AND w.is_deleted = false
+      WHERE w.verification_status IN ('Verified', 'Pending') AND w.is_deleted = false
     `;
     let countQuery = `
       SELECT COUNT(*) 
       FROM Workers w 
       JOIN Users u ON w.user_id = u.id 
-      WHERE w.verification_status = 'Verified' AND w.is_deleted = false
+      WHERE w.verification_status IN ('Verified', 'Pending') AND w.is_deleted = false
     `;
     const params = [];
 

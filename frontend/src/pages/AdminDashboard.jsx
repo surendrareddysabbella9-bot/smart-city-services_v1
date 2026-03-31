@@ -26,7 +26,13 @@ function AdminDashboard() {
       setUsers(usersRes.data.data ? usersRes.data.data.users : usersRes.data);
       
       const allW = allWorkersRes.data.data ? allWorkersRes.data.data.workers : allWorkersRes.data;
-      setFlaggedWorkers(allW.filter(w => (w.trust_score && Number(w.trust_score) < 65) || (w.averageRating && Number(w.averageRating) < 3.5)));
+      setFlaggedWorkers(allW.filter(w => {
+        const hasLowTrust = w.trust_score && Number(w.trust_score) < 65;
+        const hasLowRating = w.averageRating && Number(w.averageRating) > 0 && Number(w.averageRating) < 3.5;
+        if (hasLowTrust) w.flagReason = "Low Mathematical Trust Factor";
+        else if (hasLowRating) w.flagReason = "Poor Client Feedback Threshold";
+        return hasLowTrust || hasLowRating;
+      }));
     } catch (err) {
       console.error(err);
     }
@@ -82,8 +88,10 @@ function AdminDashboard() {
                 <p className="card-subtitle">{worker.category}</p>
                 <div style={{ margin: '1rem 0' }}>
                   <p style={{ color: '#b91c1c', fontWeight: 'bold' }}><strong>Trust Score:</strong> {Number(worker.trust_score).toFixed(0)}/100</p>
-                  <p style={{ color: '#b91c1c', fontWeight: 'bold' }}><strong>Rating:</strong> {worker.averageRating} Stars</p>
-                  <p><strong>System Warning:</strong> User parameters breached minimum algorithm bounds remotely.</p>
+                  <p style={{ color: '#b91c1c', fontWeight: 'bold' }}><strong>Rating:</strong> {worker.averageRating} Stars ({worker.total_jobs || 0} jobs)</p>
+                  <p style={{ color: '#dc2626', fontSize: '0.9rem', marginTop: '0.5rem', padding: '0.5rem', background: '#fff1f2', borderRadius: '4px', border: '1px solid #fecaca' }}>
+                    <strong>Protocol Warning:</strong> {worker.flagReason || 'Algorithmic mismatch detected.'}
+                  </p>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
                   <button onClick={() => toast.success('Telemetry dismissed natively.')} className="btn btn-secondary">Dismiss Alert</button>
@@ -156,14 +164,17 @@ function AdminDashboard() {
                   <td style={{ padding: '1rem' }}><span className={`badge ${u.role.toLowerCase()}`}>{u.role}</span></td>
                   <td style={{ padding: '1rem', fontSize: '0.9rem' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button 
-                      onClick={() => handleDeleteUser(u)} 
-                      className="btn btn-danger" 
-                      style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', opacity: u.id === currentUser.id ? 0.3 : 1, cursor: u.id === currentUser.id ? 'not-allowed' : 'pointer' }}
-                      disabled={u.id === currentUser.id}
-                    >
-                      <FaTrash /> Delete
-                    </button>
+                    {u.id !== currentUser.id ? (
+                      <button 
+                        onClick={() => handleDeleteUser(u)} 
+                        className="btn btn-danger" 
+                        style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    ) : (
+                      <span style={{ color: 'var(--text-light)', fontSize: '0.8rem', fontStyle: 'italic' }}>Protected Administrator</span>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -8,6 +8,7 @@ import EmptyState from '../components/EmptyState';
 
 function WorkerProfile() {
   const { id } = useParams();
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
   
   const { data: worker, isLoading, isError } = useQuery({
     queryKey: ['workerProfile', id],
