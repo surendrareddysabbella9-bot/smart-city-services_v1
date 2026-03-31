@@ -54,7 +54,17 @@ function ProfileEditor({ userRole }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
           <div className="form-group">
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text)' }}>Display Name</label>
-            <input type="text" name="name" value={formData.name || ''} onChange={handleChange} required style={inputStyle} />
+            <input 
+              type="text" 
+              name="name" 
+              value={formData.name || ''} 
+              onChange={handleChange} 
+              required 
+              disabled={userRole === 'Admin'}
+              placeholder="e.g. Jane Doe" 
+              style={{...inputStyle, background: userRole === 'Admin' ? '#e2e8f0' : '#f8fafc', cursor: userRole === 'Admin' ? 'not-allowed' : 'text'}}
+              title={userRole === 'Admin' ? "Administrators cannot dynamically modify identity credentials." : ""}
+            />
           </div>
           
           <div className="form-group">
@@ -66,6 +76,7 @@ function ProfileEditor({ userRole }) {
                 value={formData.phone || ''} 
                 onChange={handleChange} 
                 required 
+                placeholder="e.g. (555) 123-4567"
                 style={{...inputStyle, paddingRight: '2.5rem'}}
               />
               <button type="button" onClick={() => setShowPhone(!showPhone)} style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--text-light)', cursor: 'pointer' }}>
@@ -76,7 +87,7 @@ function ProfileEditor({ userRole }) {
 
           <div className="form-group">
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text)' }}>City Location</label>
-            <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required style={inputStyle} />
+            <input type="text" name="location" value={formData.location || ''} onChange={handleChange} placeholder="e.g. Seattle, WA" required style={inputStyle} />
           </div>
           
           {userRole === 'Worker' && (
